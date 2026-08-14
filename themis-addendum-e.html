@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>THEMIS Addendum E: Metacognitive Governance and the Second Calibration Loop</title>
+<style>
+  :root{
+    --ink:#0a0e1a;
+    --panel:#101627;
+    --panel-2:#141b30;
+    --line:#232d4a;
+    --text:#c8d0e4;
+    --text-dim:#8a94b0;
+    --text-faint:#5a6480;
+    --gold:#d4a843;
+    --gold-dim:#9a7c34;
+    --loop-ai:#4fb3c9;
+    --loop-self:#d4a843;
+    --danger:#c96a5a;
+    --ok:#6fae7e;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--ink);
+    color:var(--text);
+    font-family:"Public Sans","Segoe UI",system-ui,sans-serif;
+    font-size:16px;
+    line-height:1.65;
+    -webkit-font-smoothing:antialiased;
+  }
+  @import url('');
+  .serif{font-family:"Newsreader",Georgia,"Times New Roman",serif;}
+  code,.mono{font-family:"IBM Plex Mono","SFMono-Regular",Consolas,monospace;}
+
+  .wrap{max-width:1060px;margin:0 auto;padding:0 32px;}
+
+  /* ===== Masthead ===== */
+  header{
+    border-bottom:1px solid var(--line);
+    padding:56px 0 44px;
+    background:
+      radial-gradient(ellipse 900px 400px at 70% -10%, rgba(212,168,67,.07), transparent 60%),
+      radial-gradient(ellipse 700px 380px at 10% 110%, rgba(79,179,201,.05), transparent 60%);
+  }
+  .doc-line{
+    display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;
+    font-family:"IBM Plex Mono",monospace;font-size:12px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--text-faint);margin-bottom:22px;
+  }
+  .doc-line .tag{color:var(--gold);border:1px solid var(--gold-dim);padding:3px 10px;border-radius:2px;}
+  h1{
+    font-family:Georgia,"Times New Roman",serif;
+    font-weight:500;font-size:clamp(30px,4.4vw,46px);line-height:1.15;
+    color:#e8ecf6;max-width:20ch;letter-spacing:-.01em;
+  }
+  h1 em{font-style:italic;color:var(--gold);}
+  .lede{
+    margin-top:22px;max-width:66ch;color:var(--text-dim);font-size:17.5px;
+  }
+  .meta-row{
+    margin-top:30px;display:flex;gap:36px;flex-wrap:wrap;
+    font-family:"IBM Plex Mono",monospace;font-size:12.5px;color:var(--text-faint);
+  }
+  .meta-row b{display:block;color:var(--text-dim);font-weight:500;margin-bottom:2px;letter-spacing:.08em;text-transform:uppercase;font-size:10.5px;}
+
+  /* ===== TOC ===== */
+  nav{
+    border-bottom:1px solid var(--line);
+    padding:18px 0;
+    position:sticky;top:0;z-index:20;
+    background:rgba(10,14,26,.92);backdrop-filter:blur(8px);
+  }
+  nav .wrap{display:flex;gap:22px;flex-wrap:wrap;font-size:12.5px;font-family:"IBM Plex Mono",monospace;}
+  nav a{color:var(--text-faint);text-decoration:none;letter-spacing:.05em;}
+  nav a:hover,nav a:focus{color:var(--gold);}
+  nav a:focus-visible{outline:2px solid var(--gold);outline-offset:3px;}
+
+  /* ===== Sections ===== */
+  section{padding:64px 0;border-bottom:1px solid var(--line);}
+  .kicker{
+    font-family:"IBM Plex Mono",monospace;font-size:12px;letter-spacing:.18em;
+    text-transform:uppercase;color:var(--gold);margin-bottom:14px;
+  }
+  h2{
+    font-family:Georgia,serif;font-weight:500;font-size:30px;color:#e8ecf6;
+    margin-bottom:22px;letter-spacing:-.005em;line-height:1.2;
+  }
+  h3{
+    font-family:Georgia,serif;font-weight:500;font-size:20px;color:#dfe4f0;
+    margin:34px 0 12px;
+  }
+  p{margin-bottom:16px;max-width:76ch;}
+  p.dim{color:var(--text-dim);}
+  strong{color:#e2e7f2;font-weight:600;}
+
+  /* ===== Dual loop diagram ===== */
+  .loop-figure{
+    margin:38px 0 10px;background:var(--panel);border:1px solid var(--line);
+    border-radius:6px;padding:34px 28px 22px;
+  }
+  .loop-figure figcaption{
+    margin-top:18px;font-size:13px;color:var(--text-faint);max-width:70ch;
+    font-family:"IBM Plex Mono",monospace;line-height:1.6;
+  }
+  .legend{display:flex;gap:28px;margin-top:14px;font-size:12.5px;font-family:"IBM Plex Mono",monospace;}
+  .legend span{display:flex;align-items:center;gap:8px;color:var(--text-dim);}
+  .swatch{width:22px;height:3px;border-radius:2px;display:inline-block;}
+
+  /* ===== Capability blocks ===== */
+  .cap{
+    background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--gold-dim);
+    border-radius:4px;padding:30px 32px;margin:28px 0;
+  }
+  .cap-head{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;margin-bottom:6px;}
+  .cap-id{
+    font-family:"IBM Plex Mono",monospace;font-size:13px;color:var(--gold);
+    letter-spacing:.1em;
+  }
+  .cap h3{margin:0;font-size:22px;}
+  .cap .axis-ref{
+    font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--text-faint);
+    letter-spacing:.08em;text-transform:uppercase;margin-bottom:16px;
+  }
+  .fieldgrid{
+    display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);
+    border:1px solid var(--line);border-radius:4px;overflow:hidden;margin:20px 0 6px;
+  }
+  .fieldgrid>div{background:var(--panel-2);padding:14px 18px;}
+  .fieldgrid b{
+    display:block;font-family:"IBM Plex Mono",monospace;font-size:10.5px;
+    letter-spacing:.12em;text-transform:uppercase;color:var(--text-faint);
+    font-weight:500;margin-bottom:5px;
+  }
+  .fieldgrid span{font-size:14px;color:var(--text);}
+  .fieldgrid .mono-val{font-family:"IBM Plex Mono",monospace;font-size:13px;}
+
+  .expr{
+    font-family:"IBM Plex Mono",monospace;font-size:14px;color:#e8dcb8;
+    background:#171d10;background:linear-gradient(90deg,rgba(212,168,67,.08),rgba(212,168,67,.02));
+    border:1px solid rgba(212,168,67,.25);border-radius:4px;
+    padding:14px 18px;margin:16px 0;overflow-x:auto;white-space:nowrap;
+  }
+  .expr .lbl{color:var(--text-faint);font-size:11px;display:block;white-space:normal;margin-bottom:6px;letter-spacing:.1em;text-transform:uppercase;}
+
+  ul.tight{margin:0 0 16px 0;padding-left:0;list-style:none;max-width:76ch;}
+  ul.tight li{
+    padding:9px 0 9px 26px;position:relative;border-bottom:1px solid rgba(35,45,74,.55);
+    font-size:15px;
+  }
+  ul.tight li:last-child{border-bottom:none;}
+  ul.tight li::before{
+    content:"";position:absolute;left:4px;top:17px;width:8px;height:8px;
+    border:1.5px solid var(--gold-dim);transform:rotate(45deg);
+  }
+
+  /* ===== Tables ===== */
+  table{width:100%;border-collapse:collapse;margin:24px 0;font-size:14px;}
+  th{
+    text-align:left;font-family:"IBM Plex Mono",monospace;font-size:11px;
+    letter-spacing:.12em;text-transform:uppercase;color:var(--text-faint);
+    font-weight:500;padding:10px 14px;border-bottom:1px solid var(--gold-dim);
+  }
+  td{padding:13px 14px;border-bottom:1px solid var(--line);vertical-align:top;color:var(--text);}
+  td.mono{font-size:12.5px;color:var(--gold);white-space:nowrap;}
+  tr:hover td{background:rgba(212,168,67,.03);}
+
+  .seq-num{
+    display:inline-flex;align-items:center;justify-content:center;
+    width:26px;height:26px;border:1px solid var(--gold-dim);border-radius:50%;
+    font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--gold);
+  }
+
+  .callout{
+    border:1px solid var(--line);border-left:3px solid var(--loop-ai);
+    background:var(--panel);border-radius:4px;padding:22px 26px;margin:26px 0;
+    max-width:80ch;
+  }
+  .callout .kicker{color:var(--loop-ai);margin-bottom:8px;}
+  .callout p:last-child{margin-bottom:0;}
+
+  .refs{font-size:14px;color:var(--text-dim);}
+  .refs li{margin-bottom:10px;padding-left:0;list-style:none;max-width:80ch;}
+  .refs i{color:var(--text);font-style:italic;}
+
+  footer{padding:44px 0 64px;font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--text-faint);}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+
+  @media (max-width:720px){
+    .fieldgrid{grid-template-columns:1fr;}
+    section{padding:48px 0;}
+    .cap{padding:24px 20px;}
+  }
+  @media (prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="doc-line">
+      <span class="tag">THEMIS // Addendum E</span>
+      <span>Intelligence OS · Governance Layer</span>
+      <span>Draft v0.1</span>
+    </div>
+    <h1>Metacognitive Governance and the <em>Second Calibration Loop</em></h1>
+    <p class="lede">THEMIS currently governs the machine and the human-machine trust boundary. It does not yet govern the analyst's model of themselves. This addendum specifies six capabilities that extend the governance layer from trust calibration to self-evaluation calibration, grounded in the Maier (2026) eight-axis framework and the Fernandes (2026) performance-metacognition decoupling result.</p>
+    <div class="meta-row">
+      <div><b>Status</b>Proposed for review</div>
+      <div><b>Date</b>13 Aug 2026</div>
+      <div><b>Author</b>A. Stavely, Technical Director</div>
+      <div><b>Supersedes</b>None. Extends Addendum D</div>
+    </div>
+  </div>
+</header>
+
+<nav aria-label="Document sections">
+  <div class="wrap">
+    <a href="#background">E.0 Background</a>
+    <a href="#gap">E.0.1 Gap</a>
+    <a href="#e1">E.1 SXI</a>
+    <a href="#e2">E.2 Probes</a>
+    <a href="#e3">E.3 Provenance</a>
+    <a href="#e4">E.4 Phase Policy</a>
+    <a href="#e5">E.5 EAE Loop</a>
+    <a href="#e6">E.6 METIS</a>
+    <a href="#mapping">Axis Map</a>
+    <a href="#sequencing">Sequencing</a>
+    <a href="#dissertation">Dissertation</a>
+  </div>
+</nav>
+
+<!-- ============ E.0 BACKGROUND ============ -->
+<section id="background">
+  <div class="wrap">
+    <div class="kicker">E.0 · Background and Motivation</div>
+    <h2>Performance and metacognition can move in opposite directions</h2>
+    <p>Recent literature establishes a finding with direct consequences for any platform that embeds AI assistance in analytic work: <strong>AI assistance can improve task performance while degrading the user's ability to judge their own performance.</strong> Fernandes et al. (2026) demonstrate this decoupling empirically in reasoning tasks. Liebenow et al. (2025) show that LLM-generated feedback does not, on average, improve self-assessment accuracy. The OECD (2026) names the policy-level risk a "mirage of false mastery."</p>
+    <p>Maier (2026) organizes this literature into an eight-axis explanatory framework: the functional position of AI in the task, reflective support versus cognitive substitution, metacognitive engagement, effort redistribution, cognitive engagement depth, the gap between assisted performance and actual learning, trust regulation and attribution of success, and self-evaluation accuracy. The framework's terminal construct is self-evaluation error:</p>
+    <div class="expr">
+      <span class="lbl">Maier Axis 8 · Self-evaluation error</span>
+      EAE = |Jperf &minus; Pactual| &nbsp;&nbsp;·&nbsp;&nbsp; AAE &darr; &hArr; EAE &uarr;
+    </div>
+    <p class="dim">Where Jperf is the analyst's judgment of their own performance and Pactual is performance against an independently verifiable criterion. Overestimation when Jperf &gt; Pactual; underestimation when Jperf &lt; Pactual.</p>
+    <p>For an intelligence production environment the stakes exceed the pedagogical framing of the source literature. An analyst who cannot accurately distinguish their own contribution from the system's contribution cannot accurately assess the confidence that should attach to a finished product, cannot reliably brief the provenance of a judgment, and may not retain the unassisted competence the mission requires under AI denial. Miscalibrated self-evaluation is therefore a <strong>mission assurance problem</strong>, not only a learning problem.</p>
+
+    <h3 id="gap">E.0.1 The gap in the current architecture</h3>
+    <p>THEMIS closes one calibration loop today. MIMIR baselines model capability pre-deployment through Elo evaluation. The Reliance-Accuracy Index (RAI) measures whether analyst reliance on the system tracks the system's demonstrated accuracy at runtime. ATHENA delivers interventions when reliance and accuracy diverge. This is the <strong>trust loop</strong>: it calibrates the analyst's model of the AI.</p>
+    <p>Nothing in the current architecture calibrates the analyst's model of the analyst. The Fernandes result shows these are separate loops that can diverge: reliance on the system can be perfectly calibrated while self-assessment drifts into overestimation, because the analyst correctly trusts a capable system and then erroneously attributes the resulting success to their own competence. Maier's Axis 7 names this mechanism directly: erroneous attribution rises when the system's contribution is opaque, control is delegated, and independent verification is weak.</p>
+
+    <figure class="loop-figure">
+      <svg viewBox="0 0 920 300" width="100%" role="img" aria-label="Diagram of two calibration loops. The trust loop between analyst and AI system is closed by RAI, MIMIR, and ATHENA. The self loop between the analyst and their own competence model is currently open and is closed by the Addendum E capabilities.">
+        <defs>
+          <marker id="arrA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="#4fb3c9"/>
+          </marker>
+          <marker id="arrG" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="#d4a843"/>
+          </marker>
+        </defs>
+        <!-- Analyst node -->
+        <rect x="380" y="110" width="160" height="76" rx="4" fill="#141b30" stroke="#3a466e"/>
+        <text x="460" y="142" text-anchor="middle" fill="#e8ecf6" font-family="Georgia,serif" font-size="19">Analyst</text>
+        <text x="460" y="165" text-anchor="middle" fill="#8a94b0" font-family="monospace" font-size="11">judgment · reliance</text>
+        <!-- AI node -->
+        <rect x="720" y="110" width="160" height="76" rx="4" fill="#141b30" stroke="#2c5b66"/>
+        <text x="800" y="142" text-anchor="middle" fill="#e8ecf6" font-family="Georgia,serif" font-size="19">AI System</text>
+        <text x="800" y="165" text-anchor="middle" fill="#8a94b0" font-family="monospace" font-size="11">via ContextForge</text>
+        <!-- Self-model node -->
+        <rect x="40" y="110" width="180" height="76" rx="4" fill="#141b30" stroke="#7a6428" stroke-dasharray="6 4"/>
+        <text x="130" y="142" text-anchor="middle" fill="#e8ecf6" font-family="Georgia,serif" font-size="19">Self-Model</text>
+        <text x="130" y="165" text-anchor="middle" fill="#8a94b0" font-family="monospace" font-size="11">Jperf vs Pactual</text>
+        <!-- Trust loop arrows -->
+        <path d="M540 128 L720 128" stroke="#4fb3c9" stroke-width="2" fill="none" marker-end="url(#arrA)"/>
+        <path d="M720 168 L540 168" stroke="#4fb3c9" stroke-width="2" fill="none" marker-end="url(#arrA)"/>
+        <text x="630" y="115" text-anchor="middle" fill="#4fb3c9" font-family="monospace" font-size="12">reliance</text>
+        <text x="630" y="190" text-anchor="middle" fill="#4fb3c9" font-family="monospace" font-size="12">output · accuracy</text>
+        <text x="630" y="230" text-anchor="middle" fill="#4fb3c9" font-family="monospace" font-size="12.5">TRUST LOOP: closed</text>
+        <text x="630" y="250" text-anchor="middle" fill="#5a6480" font-family="monospace" font-size="11">RAI · MIMIR · ATHENA</text>
+        <!-- Self loop arrows -->
+        <path d="M380 128 L220 128" stroke="#d4a843" stroke-width="2" fill="none" stroke-dasharray="7 5" marker-end="url(#arrG)"/>
+        <path d="M220 168 L380 168" stroke="#d4a843" stroke-width="2" fill="none" stroke-dasharray="7 5" marker-end="url(#arrG)"/>
+        <text x="300" y="115" text-anchor="middle" fill="#d4a843" font-family="monospace" font-size="12">self-assessment</text>
+        <text x="300" y="190" text-anchor="middle" fill="#d4a843" font-family="monospace" font-size="12">ground truth</text>
+        <text x="300" y="230" text-anchor="middle" fill="#d4a843" font-family="monospace" font-size="12.5">SELF LOOP: open</text>
+        <text x="300" y="250" text-anchor="middle" fill="#5a6480" font-family="monospace" font-size="11">closed by E.1 to E.6</text>
+      </svg>
+      <div class="legend">
+        <span><span class="swatch" style="background:#4fb3c9"></span>Trust loop (existing)</span>
+        <span><span class="swatch" style="background:#d4a843"></span>Self loop (this addendum)</span>
+      </div>
+      <figcaption>Fig. E-1. The dual-loop model. RAI calibrates the analyst's model of the AI. Nothing currently calibrates the analyst's model of the analyst. Fernandes (2026) shows the loops can move in opposite directions.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ============ E.1 ============ -->
+<section id="e1">
+  <div class="wrap">
+    <div class="kicker">Capability Additions</div>
+    <h2>Six capabilities to close the self loop</h2>
+    <p class="dim">Each capability is specified against the Maier axis it operationalizes, the THEMIS services it touches, and the telemetry it consumes. All six respect the standing architectural rule: every tool call routes through ContextForge, and all observability flows through Langfuse into THEMIS.</p>
+
+    <div class="cap">
+      <div class="cap-head">
+        <span class="cap-id">E.1</span>
+        <h3>Substitution Index (SXI)</h3>
+      </div>
+      <div class="axis-ref">Operationalizes Maier Axes 2, 3, 5 · Reflective support vs cognitive substitution</div>
+      <p>A per-session behavioral index distinguishing reflective use from substitutive use, computed entirely from telemetry THEMIS already collects. No new instrumentation is required; SXI is a computation over the existing ContextForge and Langfuse stream.</p>
+      <ul class="tight">
+        <li><strong>Time-to-accept:</strong> latency between output delivery and acceptance. Near-instant acceptance of substantive analytic content is a substitution signature.</li>
+        <li><strong>Edit distance:</strong> normalized delta between generated content and content committed to the product. Zero-edit adoption at scale indicates substitution.</li>
+        <li><strong>Verification actions:</strong> count and depth of source checks, cross-references, and tool calls that test rather than extend the generated claim.</li>
+        <li><strong>Alternative comparison:</strong> whether the analyst requested or constructed competing formulations before committing.</li>
+      </ul>
+      <div class="expr">
+        <span class="lbl">Session-level signal · Maier Axis 2 restated over telemetry</span>
+        SXI &uarr; &hArr; t_accept &darr;, edit_dist &darr;, verify_actions &darr;, alt_compare &darr;
+      </div>
+      <div class="fieldgrid">
+        <div><b>Consumes</b><span class="mono-val">ContextForge call log · Langfuse traces · product diffs</span></div>
+        <div><b>Feeds</b><span class="mono-val">ATHENA (intervention trigger) · ARGUS (aggregate drift)</span></div>
+        <div><b>New services</b><span>None. Computation added to existing RAI pipeline</span></div>
+        <div><b>Catalog impact</b><span>Tag all 31 interventions on the reflective-substitutive axis; some scaffolds may function as substitution if misapplied</span></div>
+      </div>
+    </div>
+
+    <div class="cap" id="e2">
+      <div class="cap-head">
+        <span class="cap-id">E.2</span>
+        <h3>Attribution Probes</h3>
+      </div>
+      <div class="axis-ref">Operationalizes Maier Axis 7 · Erroneous attribution of success</div>
+      <p>Lightweight post-task elicitations delivered through ATHENA, sampled rather than universal to limit friction. Probes ask the analyst to delimit contribution: which conclusions in this product could you defend without the system, which claims did you independently verify, which elements were generated and adopted. Responses are scored against the cognitive provenance ledger (E.3) once it exists; until then they serve as self-report data and as labeled training signal for SXI thresholds.</p>
+      <div class="expr">
+        <span class="lbl">Maier Axis 7 · Attribution risk</span>
+        RAE &uarr; &hArr; TAI &gt; FAI, CAI &uarr;, OAI &uarr;, Vind &darr;
+      </div>
+      <div class="fieldgrid">
+        <div><b>Consumes</b><span class="mono-val">Session product · SXI · provenance ledger (E.3, later)</span></div>
+        <div><b>Feeds</b><span class="mono-val">EAE loop (E.5) · SXI label set · ARGUS</span></div>
+        <div><b>New services</b><span>None. Intervention catalog entries 32 through 34</span></div>
+        <div><b>Sampling</b><span>Stratified by SXI band; oversample high-substitution sessions</span></div>
+      </div>
+    </div>
+
+    <div class="cap" id="e3">
+      <div class="cap-head">
+        <span class="cap-id">E.3</span>
+        <h3>Cognitive Provenance Ledger</h3>
+      </div>
+      <div class="axis-ref">Operationalizes Maier Axes 1, 7 · Process transparency and contribution delimitation</div>
+      <p>ARBOR's cryptographic chain of custody answers "where did this evidence come from and who touched it." The cognitive provenance ledger extends the same discipline to analytic authorship: for every section of a finished product, a queryable record of whether it was AI-generated, AI-revised, human-authored, or human-verified, and in what order. Maier's central Axis 7 risk, the system's contribution being absorbed into an undifferentiated sense of success, is mitigated by making the contribution split a first-class queryable artifact rather than a memory.</p>
+      <p>The ledger also changes review economics. Two textually identical products are not epistemically identical: one that is 90 percent generated with zero verification events should present differently to a reviewer than one with heavy human revision and a dense verification trail. Review workflows gain a provenance panel; briefing workflows gain an honest answer to "how was this produced."</p>
+      <div class="fieldgrid">
+        <div><b>Consumes</b><span class="mono-val">ContextForge stream · editor events · verification tool calls</span></div>
+        <div><b>Feeds</b><span class="mono-val">Review UX · attribution probe scoring · SAGA session narrative</span></div>
+        <div><b>Home</b><span>ALETHEIA (truth and disclosure), with SAGA rendering the narrative view</span></div>
+        <div><b>Schema impact</b><span>Extends Mission Common Schema with an authorship-event type; one-directional flow into product metadata</span></div>
+      </div>
+    </div>
+
+    <div class="cap" id="e4">
+      <div class="cap-head">
+        <span class="cap-id">E.4</span>
+        <h3>Phase-Aware Capability Policy</h3>
+      </div>
+      <div class="axis-ref">Operationalizes Maier Axis 1 · Functional position of AI in the task</div>
+      <p>MOIRAI bounds what a session may do. This capability adds when: capability grants keyed to workflow phase, enforced by KAIROS, evaluated at ContextForge. The canonical policy is <strong>commit-then-assist</strong>: for designated task classes, generative drafting is locked until the analyst records an initial independent assessment. On unlock, the initial assessment is preserved immutably for comparison, giving the analyst (and E.2 probes) a before-and-after view of their own position.</p>
+      <p>This converts Maier's strongest practical recommendation, independent-first workflows, from a design guideline into an enforceable policy. It is precisely the kind of control only a governance layer at THEMIS's position in the stack can implement: it requires visibility across MOIRAI grants, KAIROS timing, and every tool call in the session.</p>
+      <ul class="tight">
+        <li><strong>Phase gates are per task class, not global.</strong> Routine formatting tasks need no gate; initial analytic judgment on priority intelligence requirements does.</li>
+        <li><strong>The initial assessment is a governance artifact.</strong> Immutable, timestamped, joined to the final product in the provenance ledger.</li>
+        <li><strong>Unlock is automatic on commit,</strong> never adjudicated by a human in the loop, to keep friction predictable and low.</li>
+      </ul>
+      <div class="fieldgrid">
+        <div><b>Enforced by</b><span class="mono-val">KAIROS (phase) · MOIRAI (grant) · ContextForge (evaluation)</span></div>
+        <div><b>Feeds</b><span class="mono-val">Provenance ledger (E.3) · EAE loop (E.5)</span></div>
+        <div><b>New services</b><span>None. Policy vocabulary extension to MOIRAI grants</span></div>
+        <div><b>Risk</b><span>Analyst friction if task classes are drawn too broadly; start narrow, expand on evidence</span></div>
+      </div>
+    </div>
+
+    <div class="cap" id="e5">
+      <div class="cap-head">
+        <span class="cap-id">E.5</span>
+        <h3>Self-Assessment Accuracy Loop (EAE)</h3>
+      </div>
+      <div class="axis-ref">Operationalizes Maier Axis 8 · The terminal construct</div>
+      <p>The third runtime metric of the calibration architecture, alongside MIMIR Elo and RAI. At sampled decision points ATHENA elicits the analyst's confidence in their own judgment, explicitly distinct from their confidence in the system's output. Where outcome ground truth becomes available, judged performance is scored against actual performance, producing a running EAE per analyst, per task class, per assistance configuration.</p>
+      <div class="expr">
+        <span class="lbl">Runtime metric · directly implements Maier Axis 8</span>
+        EAE = |Jperf &minus; Pactual| &nbsp;·&nbsp; tracked per analyst &times; task class &times; assist config
+      </div>
+      <p>This is genuinely additive to the dual-metric architecture, not a refinement of it. RAI asks: does reliance track system accuracy? EAE asks: does self-assessment track own accuracy? The intervention logic differs accordingly. RAI divergence triggers trust-side interventions; EAE divergence triggers attribution-side interventions (E.2 probes, provenance surfacing, phase-gate tightening).</p>
+      <div class="fieldgrid">
+        <div><b>Elicitation surface</b><span class="mono-val">ATHENA · sampled, low-friction, decision-point anchored</span></div>
+        <div><b>Scoring home</b><span class="mono-val">Trust Calibration Service, alongside RAI</span></div>
+        <div><b>Ground truth</b><span>Adjudicated outcomes, red-team review, downstream validation events; sparse and lagged, treated as such</span></div>
+        <div><b>Dissertation tie</b><span>Direct operationalization of the Maier framework; see E.9</span></div>
+      </div>
+    </div>
+
+    <div class="cap" id="e6">
+      <div class="cap-head">
+        <span class="cap-id">E.6</span>
+        <h3>METIS: Unassisted Competence Baselining</h3>
+      </div>
+      <div class="axis-ref">Operationalizes Maier Axis 6 · Assisted performance vs actual learning</div>
+      <p>The largest structural addition, and the only one proposed as a named service. MIMIR baselines models; nothing baselines analysts. Maier's Axis 6 gap is only measurable if actual unassisted competence is periodically measured:</p>
+      <div class="expr">
+        <span class="lbl">Maier Axis 6 · Vulnerability of self-evaluation</span>
+        VAE &uarr; &hArr; |P_AI &minus; L_actual| &uarr;
+      </div>
+      <p>METIS (proposed name: mother of Athena, personification of practical wisdom, a deliberate pairing with the ATHENA intervention surface) schedules and scores periodic AI-off tasks that establish whether independent competence is holding, growing, or decaying under sustained assistance. Task instances draw from the same classes as assisted work so that P_AI and L_actual are commensurable.</p>
+      <p><strong>The domain justification exceeds the pedagogical one.</strong> In a contested or airgapped scenario the platform may degrade or be denied. Whether analysts can still perform is a continuity-of-operations question. METIS reframes skill decay monitoring as a readiness metric, which is also the framing most likely to secure the organizational buy-in this capability requires.</p>
+      <div class="fieldgrid">
+        <div><b>New service</b><span class="mono-val">METIS (proposed) · schedules, administers, scores AI-off tasks</span></div>
+        <div><b>Feeds</b><span class="mono-val">EAE ground truth · Axis 6 gap metric · readiness reporting</span></div>
+        <div><b>Dependencies</b><span>Organizational policy for protected AI-off time; task bank per class</span></div>
+        <div><b>Sensitivity</b><span>Individual results are calibration data, not performance evaluation; ARGUS aggregates, LOGOS governs access. This boundary must be explicit in policy or the telemetry will be gamed</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ AXIS MAP ============ -->
+<section id="mapping">
+  <div class="wrap">
+    <div class="kicker">E.7 · Coverage</div>
+    <h2>Maier axis to THEMIS mapping</h2>
+    <p class="dim">Coverage before and after this addendum. "Partial" indicates raw telemetry exists but no construct is computed or enforced.</p>
+    <table>
+      <thead>
+        <tr><th>Maier Axis</th><th>Construct</th><th>Today</th><th>After Addendum E</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="mono">Axis 1</td><td>Functional position of AI in task</td><td>Partial: MOIRAI bounds what, not when</td><td>E.4 phase-aware policy via KAIROS</td></tr>
+        <tr><td class="mono">Axis 2</td><td>Reflective support vs substitution</td><td>Partial: raw traces in Langfuse</td><td>E.1 SXI computed per session</td></tr>
+        <tr><td class="mono">Axis 3</td><td>Metacognitive engagement</td><td>Partial: verification calls observable</td><td>E.1 SXI components + E.2 probes</td></tr>
+        <tr><td class="mono">Axis 4</td><td>Effort redistribution</td><td>Uncovered</td><td>Partially inferable from SXI; explicit measure deferred</td></tr>
+        <tr><td class="mono">Axis 5</td><td>Cognitive engagement depth</td><td>Partial: edit events observable</td><td>E.1 edit-distance and comparison signals</td></tr>
+        <tr><td class="mono">Axis 6</td><td>Assisted performance vs learning</td><td>Uncovered</td><td>E.6 METIS unassisted baselining</td></tr>
+        <tr><td class="mono">Axis 7</td><td>Trust regulation and attribution</td><td>Strong: RAI, MIMIR, ATHENA (trust half)</td><td>E.2 + E.3 close the attribution half</td></tr>
+        <tr><td class="mono">Axis 8</td><td>Self-evaluation accuracy</td><td>Uncovered</td><td>E.5 EAE as third runtime metric</td></tr>
+      </tbody>
+    </table>
+    <div class="callout">
+      <div class="kicker">Design note</div>
+      <p>Axis 4 (effort redistribution) is deliberately left without a dedicated capability. Measuring where saved effort goes requires task-time accounting that is either invasive or unreliable. The bet is that SXI plus EAE capture its downstream effects; revisit if EAE trends cannot be explained by the covered axes.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SEQUENCING ============ -->
+<section id="sequencing">
+  <div class="wrap">
+    <div class="kicker">E.8 · Implementation</div>
+    <h2>Sequencing</h2>
+    <p class="dim">Ordered by dependency and cost, not by importance. Each stage produces a usable capability on its own.</p>
+    <table>
+      <thead>
+        <tr><th></th><th>Capability</th><th>Rationale for position</th><th>Cost profile</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="seq-num">1</span></td>
+          <td><strong>E.1 SXI</strong></td>
+          <td>Pure computation over existing telemetry. No new services, no schema change, no user-facing friction. Immediately useful to ARGUS.</td>
+          <td>Low: analytics pipeline work only</td>
+        </tr>
+        <tr>
+          <td><span class="seq-num">2</span></td>
+          <td><strong>E.2 Attribution probes</strong></td>
+          <td>Catalog addition to ATHENA. Generates the label set that hardens SXI thresholds and the self-report stream E.5 will score.</td>
+          <td>Low: three catalog entries + sampling logic</td>
+        </tr>
+        <tr>
+          <td><span class="seq-num">3</span></td>
+          <td><strong>E.3 Provenance ledger</strong></td>
+          <td>Schema work on the Mission Common Schema, but leverages existing chain-of-custody patterns from ARBOR. Unlocks probe scoring and review UX.</td>
+          <td>Medium: schema + editor event capture + review panel</td>
+        </tr>
+        <tr>
+          <td><span class="seq-num">4</span></td>
+          <td><strong>E.5 EAE loop</strong></td>
+          <td>Elicitation is cheap once probes exist; scoring waits on ground-truth plumbing. Placed here so early EAE data accrues while METIS is stood up.</td>
+          <td>Medium: elicitation + sparse ground-truth joins</td>
+        </tr>
+        <tr>
+          <td><span class="seq-num">5</span></td>
+          <td><strong>E.4 Phase policy</strong></td>
+          <td>Enforcement should follow measurement: gate task classes only after SXI and EAE identify where substitution actually harms calibration.</td>
+          <td>Medium: MOIRAI grant vocabulary + KAIROS hooks</td>
+        </tr>
+        <tr>
+          <td><span class="seq-num">6</span></td>
+          <td><strong>E.6 METIS</strong></td>
+          <td>Requires organizational buy-in (protected AI-off time, non-evaluative framing), not just architecture. Readiness framing is the vehicle; bring leadership the E.1 through E.5 evidence first.</td>
+          <td>High: new service + task bank + policy work</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ============ DISSERTATION ============ -->
+<section id="dissertation">
+  <div class="wrap">
+    <div class="kicker">E.9 · Research Crosswalk</div>
+    <h2>Dissertation implications</h2>
+    <p><strong>Framing.</strong> Maier (2026) explicitly names the gap between trust-in-AI research and self-evaluation research, and the Trust Calibration Service sits astride exactly that seam. The paper supplies the published conceptual argument for why continuous calibration must include both loops. Her Axis 7 expression (RAE &uarr; &hArr; TAI &gt; FAI, ...) is a qualitative restatement of what RAI measures quantitatively: the dissertation is already past the point where the paper stops, and should say so in the literature review.</p>
+    <p><strong>Modality experiment.</strong> The scaffolding-density staircase (basic chat through full ATHENA, three rungs) is a near-direct operationalization of the Axis 1 and Axis 2 configuration space. Framing the rungs as points along the reflective-support-to-substitution continuum gives the experiment a published theoretical anchor and a citable vocabulary for the manipulation.</p>
+    <p><strong>Publication opportunity.</strong> The paper's limitations section is a roadmap of what a conceptual review cannot do and an instrumented environment can: she calls for operationalization through indicators such as verification actions, justification capacity, and performance stability without support, all of which the ContextForge and Langfuse stream produces natively. A paper titled roughly "Operationalizing self-evaluation calibration in an instrumented analytic environment" is low marginal effort once E.1 and E.5 are live, and connects the Brunswik and Hammond lens-model work on cue utilization to a running system.</p>
+    <p><strong>Construct hygiene.</strong> Keep RAI and EAE strictly separate in instruments and analysis. Eliciting "how confident are you in this answer" without specifying whose answer conflates the two loops and reproduces the confound the dual-loop model exists to resolve.</p>
+  </div>
+</section>
+
+<!-- ============ REFERENCES ============ -->
+<section id="references">
+  <div class="wrap">
+    <div class="kicker">E.10 · Sources</div>
+    <h2>References</h2>
+    <ul class="refs">
+      <li>Fernandes, D., et al. (2026). AI makes you smarter but none the wiser: The disconnect between performance and metacognition. <i>Computers in Human Behavior</i>, 175, 108779.</li>
+      <li>Kidd, C., &amp; Birhane, A. (2023). How AI can distort human beliefs. <i>Science</i>, 380(6651), 1222&ndash;1223.</li>
+      <li>Liebenow, L. W., et al. (2025). Self-assessment accuracy in the age of artificial intelligence: Differential effects of LLM-generated feedback. <i>Computers &amp; Education</i>, 237, 105385.</li>
+      <li>Maier, M. (2026). Self-evaluation in AI-assisted cognition: An explanatory framework for calibration and miscalibration effects. <i>Journal of Intelligence</i>, 14, 112.</li>
+      <li>OECD (2026). <i>OECD Digital Education Outlook 2026: Exploring effective uses of generative AI in education.</i> OECD Publishing.</li>
+      <li>Wischnewski, M., Kr&auml;mer, N., &amp; M&uuml;ller, E. (2023). Measuring and understanding trust calibrations for automated systems. <i>Proc. CHI 2023.</i></li>
+      <li>Yan, L., Greiff, S., Lodge, J. M., &amp; Ga&scaron;evi&cacute;, D. (2025). Distinguishing performance gains from learning when using generative AI. <i>Nature Reviews Psychology</i>, 4, 435&ndash;436.</li>
+    </ul>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>THEMIS // Addendum E · Draft v0.1 · Metacognitive Governance</span>
+    <span>Intelligence OS · Not for distribution outside SDO leadership</span>
+  </div>
+</footer>
+
+</body>
+</html>
