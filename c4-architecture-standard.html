@@ -223,7 +223,7 @@
     <div class="lvl-meta">
       <div><span class="k">Audience</span>The team that owns the container, reviewers of its design</div>
       <div><span class="k">Elements</span>Components within one container, plus their external touchpoints</div>
-      <div><span class="k">Update rhythm</span>When the container's internal structure meaningfully changes</div>
+      <div><span class="k">Update rhythm</span>When the container's internal structure meaningfully changes; generation-assisted (see Automation and Generation)</div>
     </div>
   </div>
 
@@ -737,6 +737,40 @@ UpdateElementStyle(bus,     $bgColor="#FFFFFF", $fontColor="#1A2330", $borderCol
     <li><strong>Tooling:</strong> <span class="madlib">[APPROVED TOOLS AND LOCATIONS, e.g., Mermaid sources at REPO PATH per system; ADR-embedded diagrams inline; rendering pipeline details]</span></li>
     <li><strong>Onboarding:</strong> every new engineer reads this standard and their portfolio's Level 1 and Level 2 diagrams in week one. If those two diagrams can't get a new engineer oriented, the diagrams need work.</li>
     <li><strong>Exceptions</strong> to this standard require an ADR. Naturally.</li>
+  </ul>
+
+  <h3>Automation and generation</h3>
+  <p class="lede">The upper levels are decision records; the lower levels and supplementary diagrams are descriptions of what already exists. Decision records are authored by humans. Descriptions get generated, and no engineer should be hand-drawing what tooling can derive.</p>
+  <p>The policy in one sentence: <strong>generated drafts in, human-ratified canon out.</strong> Levels 1 and 2 are owned by staff engineers through ADRs and are never auto-regenerated, because a generator that redraws them from code would quietly launder undecided changes into official architecture. Everything below that line is where we invest in taking the work off developers:</p>
+
+  <table>
+    <tr><th>Diagram</th><th>Source of truth</th><th>Generation approach</th><th>Human role</th></tr>
+    <tr><td><span class="lvl-tag tag3">Level 3</span>Component</td><td>The code itself, plus lightweight annotations</td><td>Static analysis and annotation scanning emit Mermaid <code class="inline">C4Component</code> conforming to our templates; LLM-assisted drafting for codebases without annotations</td><td>Review the draft, correct boundaries and responsibilities, commit. Authoring from scratch should be the exception.</td></tr>
+    <tr><td><span class="lvl-tag tag4">Level 4</span>Code</td><td>The code</td><td>Generated on demand from source (already the rule; never hand-maintained)</td><td>None beyond requesting the generation</td></tr>
+    <tr><td><strong>Dynamic</strong></td><td>Traces and test scenarios</td><td>Derived from distributed traces (<span class="madlib">[e.g., OpenTelemetry spans]</span>) or integration test runs for the named scenario; LLM-assisted drafting from the code path where tracing isn't wired up</td><td>Pick the scenario worth documenting, verify the sequence matches intent, commit</td></tr>
+    <tr><td><strong>Deployment</strong></td><td>Infrastructure as code</td><td>Generated from <span class="madlib">[Terraform / Helm / K8s manifests]</span> into the <code class="inline">architecture-beta</code> AWS-icon form. IaC is already the deployment truth; the diagram should be a projection of it, never a parallel claim.</td><td>Verify environment scoping and labels, commit source plus rendered SVG</td></tr>
+  </table>
+
+  <h4>The annotation and scanning stack</h4>
+  <p>Both stacks route through the same backbone: annotations in code produce a Structurizr model, and <code class="inline">structurizr-cli</code> exports that model to Mermaid (<code class="inline">export -format mermaid</code>), so the committed output still conforms to this standard's Mermaid-only rule. The Structurizr model is an intermediate build artifact, never the committed source of the canon.</p>
+  <table>
+    <tr><th>Stack</th><th>Package</th><th>How components are declared</th><th>Notes</th></tr>
+    <tr><td><strong>Java</strong></td><td><code class="inline">com.structurizr:structurizr-component</code> (with <code class="inline">structurizr-core</code>)</td><td>Spring codebases need no new annotations: the component finder's Spring strategy discovers <code class="inline">@Controller</code>, <code class="inline">@RestController</code>, <code class="inline">@Service</code>, <code class="inline">@Component</code>, and <code class="inline">@Repository</code> beans and infers the dependencies between them. Non-Spring code uses Structurizr's own annotations or a naming-convention strategy (e.g., classes ending in <em>Service</em>).</td><td>Reference implementation from the C4 model's creator; pluggable matching strategies; runs against compiled bytecode in the build</td></tr>
+    <tr><td><strong>Node / TypeScript</strong></td><td><code class="inline">@oselvar/c4</code></td><td>Decorators on classes: <code class="inline">@C4Container</code>, <code class="inline">@C4Component</code>, and <code class="inline">@C4Operation</code> on methods. The library records calls between components and emits Structurizr DSL; OpenAPI specs can be registered as components for API surface accuracy.</td><td>Younger project than the Java tooling: pilot on <span class="madlib">[ONE CANDIDATE SERVICE]</span> before mandating, and treat it as swappable</td></tr>
+  </table>
+  <ul class="plain">
+    <li><strong>Wrap both in internal packages</strong> (<span class="madlib">[e.g., @org/c4-annotations for npm, org-c4-annotations for Maven]</span>, published through <span class="madlib">[INTERNAL REGISTRY]</span>) so teams take one dependency, the decorator vocabulary stays identical across languages, and we can swap the underlying implementation without touching every codebase.</li>
+    <li><strong>The pipeline, end to end:</strong> annotations in code → scanner runs in the build → Structurizr model → <code class="inline">structurizr-cli export -format mermaid</code> → conforming <code class="inline">C4Component</code> Mermaid → CI diffs against the committed diagram. One command, no drawing.</li>
+    <li><strong>Descriptions still come from humans:</strong> scanners discover structure, not intent. The one-line responsibility on each component (required by notation rule 2) lives in the annotation's description argument, so writing it is a code review concern rather than a diagramming chore.</li>
+  </ul>
+
+  <h4>How we make this real</h4>
+  <ul class="plain">
+    <li><strong>An internal generation skill:</strong> we maintain a shared AI-assisted tooling setup (<span class="madlib">[e.g., a Claude Code skill / internal CLI]</span>) that encodes this standard's Mermaid templates, notation rules, and change palette, so generated drafts come out already conforming. Located at <span class="madlib">[REPO/PATH]</span>. Scanning a legacy codebase for the convergence inventory uses the same tooling.</li>
+    <li><strong>Generated diagrams are labeled:</strong> title carries generation date and source path (same rule as Level 4), so shelf life is explicit and regeneration is a command, not a chore.</li>
+    <li><strong>Drift detection in CI:</strong> for systems with generation wired up, CI regenerates Level 3 and Deployment diagrams and diffs them against the committed versions. A mismatch flags the owning team and the council. This automates the "drift is a defect" rule instead of waiting for quarterly review to catch it.</li>
+    <li><strong>Review is the human contribution, not redrawing.</strong> A generated draft that's 90% right and corrected in review is the target workflow. If teams find themselves routinely discarding generated drafts, that's a signal the generation tooling needs fixing, and it comes to the council.</li>
+    <li><strong>Levels 1 and 2 can use generated input, never generated output:</strong> scanners and LLM drafts are welcome as evidence when authoring or updating an ADR, but the canonical Context and Container diagrams change only through the ADR process.</li>
   </ul>
 </section>
 
