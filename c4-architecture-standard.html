@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>C4 Architecture Diagram Standard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Condensed:wght@600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FAFAF7;
+    --panel:#FFFFFF;
+    --ink:#1A2330;
+    --ink-soft:#4A5568;
+    --line:#DDE1DA;
+    --l1:#12306B;   /* Level 1 Context */
+    --l2:#2447C9;   /* Level 2 Container */
+    --l3:#5B79E3;   /* Level 3 Component */
+    --l4:#9DB0EF;   /* Level 4 Code */
+    --mark:#FFF3D6;
+    --ok:#2E7D4F;
+    --bad:#B3402A;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--paper);color:var(--ink);font-family:'IBM Plex Sans',system-ui,sans-serif;font-size:16px;line-height:1.6}
+  .mono{font-family:'IBM Plex Mono',monospace}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 20px}
+  .madlib{background:var(--mark);border-radius:2px;padding:0 3px;font-weight:500}
+
+  header{border-bottom:1px solid var(--line);background:var(--panel);padding:40px 0 34px}
+  .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft)}
+  h1{font-family:'IBM Plex Sans Condensed',sans-serif;font-weight:700;font-size:clamp(34px,5vw,56px);line-height:1.05;letter-spacing:-0.01em;margin:10px 0 6px}
+  .subtitle{color:var(--ink-soft);max-width:66ch;margin-bottom:26px}
+
+  /* signature: zoom stack */
+  .zoom{display:flex;gap:0;align-items:stretch;margin-top:8px}
+  .zoom .lvl{flex:1;padding:16px 16px 14px;color:#fff;position:relative;transition:flex .25s ease}
+  .zoom .lvl:hover{flex:1.6}
+  .zoom .lvl .n{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;opacity:.85}
+  .zoom .lvl .t{font-family:'IBM Plex Sans Condensed',sans-serif;font-weight:700;font-size:20px;margin:2px 0 4px}
+  .zoom .lvl .q{font-size:12.5px;opacity:.9;line-height:1.45}
+  .zoom .z1{background:var(--l1);border-radius:8px 0 0 8px}
+  .zoom .z2{background:var(--l2)}
+  .zoom .z3{background:var(--l3)}
+  .zoom .z4{background:var(--l4);border-radius:0 8px 8px 0;color:var(--ink)}
+  .zoom .z4 .n{opacity:.7}
+  .zoom-caption{font-size:13px;color:var(--ink-soft);margin-top:10px}
+  @media(max-width:760px){.zoom{flex-direction:column}.zoom .z1{border-radius:8px 8px 0 0}.zoom .z4{border-radius:0 0 8px 8px}}
+
+  nav.toc{position:sticky;top:0;z-index:50;background:var(--panel);border-bottom:1px solid var(--line)}
+  nav.toc .wrap{display:flex;gap:4px;overflow-x:auto;padding:0 20px}
+  nav.toc a{font-family:'IBM Plex Sans Condensed',sans-serif;font-weight:600;font-size:14px;letter-spacing:.02em;text-decoration:none;color:var(--ink-soft);padding:13px 14px;white-space:nowrap;border-bottom:3px solid transparent}
+  nav.toc a:hover{color:var(--ink);border-bottom-color:var(--line)}
+
+  section{padding:46px 0 10px}
+  .sec-head{display:flex;align-items:baseline;gap:14px;margin-bottom:8px}
+  .sec-num{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--ink-soft)}
+  h2{font-family:'IBM Plex Sans Condensed',sans-serif;font-weight:700;font-size:clamp(24px,3vw,34px);letter-spacing:-.01em}
+  h3{font-family:'IBM Plex Sans Condensed',sans-serif;font-weight:600;font-size:20px;margin:26px 0 8px}
+  h4{font-size:15px;font-weight:600;margin:18px 0 6px;letter-spacing:.02em}
+  p{margin:8px 0;max-width:78ch}
+  .lede{font-size:17px;color:var(--ink-soft);max-width:70ch}
+
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:20px 24px;margin:16px 0}
+  .lvl-card{border-left:5px solid var(--line)}
+  .lvl-card.b1{border-left-color:var(--l1)}
+  .lvl-card.b2{border-left-color:var(--l2)}
+  .lvl-card.b3{border-left-color:var(--l3)}
+  .lvl-card.b4{border-left-color:var(--l4)}
+  .lvl-meta{display:flex;gap:26px;flex-wrap:wrap;margin:10px 0 2px;font-size:14px}
+  .lvl-meta .k{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);display:block}
+  .lvl-tag{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.08em;color:#fff;border-radius:3px;padding:2px 8px;margin-right:10px;vertical-align:middle}
+  .tag1{background:var(--l1)}.tag2{background:var(--l2)}.tag3{background:var(--l3)}.tag4{background:var(--l4);color:var(--ink)}
+
+  .callout{background:var(--mark);border:1px solid #EAD9A8;border-radius:8px;padding:14px 18px;margin:16px 0;font-size:15px;max-width:78ch}
+
+  table{border-collapse:collapse;width:100%;margin:14px 0;background:var(--panel);border:1px solid var(--line);border-radius:8px;overflow:hidden;font-size:14.5px}
+  th{font-family:'IBM Plex Sans Condensed',sans-serif;font-weight:600;text-align:left;background:var(--ink);color:#fff;padding:10px 14px;letter-spacing:.03em}
+  td{padding:10px 14px;border-top:1px solid var(--line);vertical-align:top}
+  tr:nth-child(even) td{background:#FCFCFA}
+
+  ul.plain{margin:8px 0 8px 22px;max-width:78ch}
+  ul.plain li{margin:5px 0}
+  ol.plain{margin:8px 0 8px 22px;max-width:78ch}
+  ol.plain li{margin:5px 0}
+
+  pre{background:#141A24;color:#E8ECF4;border-radius:8px;padding:18px 20px;overflow-x:auto;font-family:'IBM Plex Mono',monospace;font-size:13px;line-height:1.55;margin:14px 0}
+  pre .cm{color:#7C8AA0}
+  code.inline{font-family:'IBM Plex Mono',monospace;font-size:13.5px;background:#F1F2EE;border:1px solid var(--line);border-radius:3px;padding:1px 5px}
+
+  /* mini diagram examples */
+  .diagram{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:22px;margin:16px 0}
+  .diagram .dg-title{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-soft);margin-bottom:14px}
+  .dbox{border-radius:6px;padding:10px 14px;text-align:center;color:#fff;font-size:13px;line-height:1.4}
+  .dbox .bn{font-weight:600;font-size:14px}
+  .dbox .bt{font-family:'IBM Plex Mono',monospace;font-size:10.5px;opacity:.8}
+  .dbox .bd{font-size:12px;opacity:.9}
+  .dbox.person{background:#3A4657;border-radius:14px}
+  .dbox.system{background:var(--l1)}
+  .dbox.ext{background:var(--panel);color:var(--ink);border:1.5px solid var(--ink)}
+  .dbox.ext .bt{opacity:.65}
+  .dbox.ext .bd{opacity:.8}
+  .dbox.container{background:var(--l2)}
+  .dbox.component{background:var(--l3)}
+  .dbox.store{background:var(--l2);border-radius:20px}
+  /* ADR change-state palette */
+  .dbox.unchg{background:#8A8F98}
+  .dbox.newel{background:var(--l2)}
+  .dbox.chg{background:var(--l2)}
+  .dbox.rm{background:#FBEAE6;color:var(--bad);border:1.5px dashed var(--bad)}
+  .dbox.rm .bn{text-decoration:line-through}
+  .dbox.rm .bt,.dbox.rm .bd{opacity:.85}
+  .state-tag{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.08em;border-radius:2px;padding:0 5px;margin-left:6px;vertical-align:1px;background:rgba(255,255,255,.25)}
+  .dbox.rm .state-tag{background:rgba(179,64,42,.12)}
+  .classbox{background:var(--panel);border:1.5px solid var(--l4);border-radius:4px;min-width:200px;font-family:'IBM Plex Mono',monospace;font-size:11.5px;text-align:left}
+  .classbox .cb-h{background:var(--l4);color:var(--ink);font-weight:600;padding:5px 10px;font-size:12px}
+  .classbox .cb-s{padding:5px 10px;border-top:1px solid var(--l4);color:var(--ink-soft)}
+  .drow{display:flex;gap:34px;justify-content:center;align-items:center;flex-wrap:wrap;margin:12px 0}
+  .arrow{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ink-soft);text-align:center}
+  .arrow .ln{display:block;font-size:16px;letter-spacing:-1px}
+  .dg-key{border-top:1px dashed var(--line);margin-top:16px;padding-top:10px;font-size:12px;color:var(--ink-soft);display:flex;gap:18px;flex-wrap:wrap}
+  .dg-key i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+  .bndry{border:1.5px dashed var(--ink-soft);border-radius:8px;padding:14px 16px 10px;margin:10px 0}
+  .bndry > .bl, .dnode > .bl{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:10px}
+  .dnode{border:1.5px solid var(--ink-soft);border-radius:8px;padding:12px 14px 8px;background:#F4F5F2;margin:8px 0}
+  .dnode .dnode{background:#ECEEE9}
+  .awsicon{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:500;background:#232F3E;color:#FF9900;border-radius:3px;padding:1px 5px;margin-right:6px;vertical-align:1px;letter-spacing:.03em}
+  .seqn{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:500;background:var(--ink);color:#fff;border-radius:50%;width:18px;height:18px;line-height:18px;text-align:center;margin-right:6px}
+
+  .good-bad{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:14px 0}
+  @media(max-width:760px){.good-bad{grid-template-columns:1fr}}
+  .gb{border-radius:8px;border:1px solid var(--line);background:var(--panel);padding:16px 18px}
+  .gb .gb-h{font-family:'IBM Plex Sans Condensed',sans-serif;font-weight:600;font-size:14px;letter-spacing:.05em;text-transform:uppercase;margin-bottom:10px}
+  .gb.good .gb-h{color:var(--ok)}
+  .gb.bad .gb-h{color:var(--bad)}
+
+  footer{border-top:1px solid var(--line);margin-top:60px;padding:26px 0 50px;color:var(--ink-soft);font-size:14px}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="eyebrow">Engineering Standard · <span class="madlib">[ORG NAME]</span> · <span class="madlib">[STD-###]</span></div>
+    <h1>C4 Architecture Diagram Standard</h1>
+    <p class="subtitle">One shared way to draw and reason about our systems. All architecture diagrams and architectural changes in this organization use the C4 model, and every ADR that changes structure carries the diagrams to prove it.</p>
+    <div class="zoom">
+      <div class="lvl z1"><span class="n">Level 1</span><div class="t">System Context</div><div class="q">How does the system fit into the world around it?</div></div>
+      <div class="lvl z2"><span class="n">Level 2</span><div class="t">Container</div><div class="q">What are the major running pieces and data stores?</div></div>
+      <div class="lvl z3"><span class="n">Level 3</span><div class="t">Component</div><div class="q">What are the building blocks inside each container?</div></div>
+      <div class="lvl z4"><span class="n">Level 4</span><div class="t">Code</div><div class="q">How is a component actually implemented?</div></div>
+    </div>
+    <p class="zoom-caption">Four zoom levels, like a map: country, city, street, building. Each level serves a different audience and answers a different question.</p>
+  </div>
+</header>
+
+<nav class="toc">
+  <div class="wrap">
+    <a href="#what">What C4 Is</a>
+    <a href="#levels">The Four Levels</a>
+    <a href="#notation">Notation Rules</a>
+    <a href="#templates">Templates</a>
+    <a href="#adr">Use in ADRs</a>
+    <a href="#governance">Governance</a>
+  </div>
+</nav>
+
+<main class="wrap">
+
+<!-- ================= WHAT ================= -->
+<section id="what">
+  <div class="sec-head"><span class="sec-num mono">00</span><h2>What C4 Is</h2></div>
+  <p class="lede">C4, created by Simon Brown, is a lightweight model for describing software architecture at four levels of zoom: Context, Containers, Components, and Code.</p>
+  <p>The core idea is the map analogy. When you plan a trip you don't use one map; you zoom. A country map shows where a city sits, a city map shows its districts, a street map shows the route, and a floor plan shows the building. Each zoom level omits detail the audience at that level doesn't need. C4 applies the same discipline to software: instead of one sprawling diagram that tries to show everything and communicates nothing, you draw a small set of diagrams, each at one deliberate zoom level, each for a specific audience.</p>
+  <p>C4 is built on a simple set of abstractions rather than a heavyweight notation:</p>
+  <ul class="plain">
+    <li><strong>Person:</strong> a human user of our systems (an analyst, an operator, an administrator)</li>
+    <li><strong>Software System:</strong> the highest level of abstraction; something that delivers value to its users, ours or someone else's</li>
+    <li><strong>Container:</strong> a separately runnable or deployable unit that executes code or stores data (an application, an API service, a database, a message broker). Not a Docker container, though a container often ships in one.</li>
+    <li><strong>Component:</strong> a grouping of related functionality inside a container, with a well-defined interface</li>
+    <li><strong>Relationship:</strong> a labeled dependency between any of the above, always annotated with intent and technology</li>
+  </ul>
+  <h4>Why we're adopting it</h4>
+  <ul class="plain">
+    <li><strong>Shared vocabulary across legacy orgs.</strong> We're converging teams with different diagramming habits. C4 gives every team the same words for the same things, which is a precondition for arguing productively about architecture.</li>
+    <li><strong>Audience-appropriate communication.</strong> A Level 1 diagram works for the Director and mission partners. A Level 3 diagram works for the team writing the code. Nobody sits through a diagram that isn't for them.</li>
+    <li><strong>Decisions become inspectable.</strong> When ADRs carry as-is and to-be diagrams at the right level, the architecture council reviews substance rather than prose.</li>
+    <li><strong>Diagrams as code.</strong> C4 tooling lets us version diagrams next to the systems they describe, so drift is visible in a diff instead of discovered in an outage.</li>
+  </ul>
+</section>
+
+<!-- ================= LEVELS ================= -->
+<section id="levels">
+  <div class="sec-head"><span class="sec-num mono">01</span><h2>The Four Levels</h2></div>
+
+  <div class="card lvl-card b1">
+    <h3 style="margin-top:0"><span class="lvl-tag tag1">Level 1</span>System Context</h3>
+    <p><strong>The question it answers:</strong> How does this system fit into the world around it?</p>
+    <p>Shows the system as a single box, surrounded by the people who use it and the other systems it depends on or serves. No technology detail, no internals. This is the diagram you can put in front of anyone.</p>
+    <div class="lvl-meta">
+      <div><span class="k">Audience</span>Everyone: leadership, mission partners, new team members, non-technical stakeholders</div>
+      <div><span class="k">Elements</span>People, our system, external systems</div>
+      <div><span class="k">Update rhythm</span>When system boundaries or external dependencies change</div>
+    </div>
+  </div>
+
+  <div class="card lvl-card b2">
+    <h3 style="margin-top:0"><span class="lvl-tag tag2">Level 2</span>Container</h3>
+    <p><strong>The question it answers:</strong> What are the major running pieces, what does each do, and how do they talk?</p>
+    <p>Zooms into the system to show its deployable units: web apps, API services, batch processors, databases, message brokers, file stores. Every container is labeled with its technology. This is the primary diagram for most architectural decisions and the workhorse level for our convergence work.</p>
+    <div class="lvl-meta">
+      <div><span class="k">Audience</span>Engineers, architects, operations, security</div>
+      <div><span class="k">Elements</span>Containers, data stores, people, external systems</div>
+      <div><span class="k">Update rhythm</span>When containers are added, removed, merged, or their protocols change</div>
+    </div>
+  </div>
+
+  <div class="card lvl-card b3">
+    <h3 style="margin-top:0"><span class="lvl-tag tag3">Level 3</span>Component</h3>
+    <p><strong>The question it answers:</strong> What are the building blocks inside a container, and what is each responsible for?</p>
+    <p>Zooms into a single container to show its major components: the modules, services-within-the-service, and their responsibilities and interactions. Draw these where they earn their keep, typically for the containers where the complexity or the risk lives. Not every container needs one.</p>
+    <div class="lvl-meta">
+      <div><span class="k">Audience</span>The team that owns the container, reviewers of its design</div>
+      <div><span class="k">Elements</span>Components within one container, plus their external touchpoints</div>
+      <div><span class="k">Update rhythm</span>When the container's internal structure meaningfully changes</div>
+    </div>
+  </div>
+
+  <div class="card lvl-card b4">
+    <h3 style="margin-top:0"><span class="lvl-tag tag4">Level 4</span>Code</h3>
+    <p><strong>The question it answers:</strong> How is a component actually implemented?</p>
+    <p>Class diagrams, entity relationships, and similar. We do not hand-draw or hand-maintain Level 4 diagrams. If code-level diagrams are needed, generate them from the source with tooling on demand. Hand-maintained code diagrams are stale the day after they're drawn.</p>
+    <div class="lvl-meta">
+      <div><span class="k">Audience</span>Developers working in the component</div>
+      <div><span class="k">Elements</span>Classes, interfaces, tables</div>
+      <div><span class="k">Update rhythm</span>Generated on demand, never maintained by hand</div>
+    </div>
+  </div>
+
+  <h3>Supplementary diagrams</h3>
+  <p>Three supporting diagram types complete the set. Use them when the question calls for them:</p>
+  <table>
+    <tr><th>Diagram</th><th>What it shows</th><th>When to use it</th></tr>
+    <tr><td><strong>System Landscape</strong></td><td>All systems and people across the organization, one level above Context</td><td>Portfolio views, convergence planning, the future state reference architecture</td></tr>
+    <tr><td><strong>Dynamic</strong></td><td>A numbered sequence of interactions for one scenario</td><td>Explaining a critical workflow, a failure mode, or a cross-container transaction</td></tr>
+    <tr><td><strong>Deployment</strong></td><td>How containers map onto infrastructure and environments, drawn with official AWS Architecture Icons via architecture-beta</td><td>Hosting decisions, accreditation boundaries, environment differences</td></tr>
+  </table>
+</section>
+
+<!-- ================= NOTATION ================= -->
+<section id="notation">
+  <div class="sec-head"><span class="sec-num mono">02</span><h2>Notation Rules</h2></div>
+  <p class="lede">C4 is notation-light, but not notation-free. These rules are what make one team's diagram readable by every other team.</p>
+
+  <ol class="plain">
+    <li><strong>Every diagram has a title and a level.</strong> Format: <code class="inline">[System Name] · System Context</code> or <code class="inline">[Container Name] · Components</code>. Untitled diagrams don't get reviewed.</li>
+    <li><strong>Every element carries four things:</strong> name, type, technology (where applicable), and a one-line description of its responsibility. A box with only a name is a guess, not a diagram.</li>
+    <li><strong>Every relationship is a labeled arrow.</strong> The label states intent ("Submits collection requests to") and technology where it matters ("JSON/HTTPS", "NATS"). Unlabeled lines are ambiguity drawn with confidence.</li>
+    <li><strong>One level per diagram.</strong> Never mix zoom levels. If you need to show a container and its components, that's two diagrams.</li>
+    <li><strong>Every diagram has a key.</strong> Shapes and colors mean nothing on their own; the legend says what they mean on this diagram.</li>
+    <li><strong>Consistent element styling.</strong> People, our systems, containers, and data stores each get a consistent visual treatment; external systems are always hollow (white fill, solid outline) so they can never be confused with anything we own or change. Canonical diagrams color by level; ADR as-is/to-be diagrams color by change state (see the change palette in the ADR section).</li>
+    <li><strong>Diagrams live as code.</strong> Mermaid source files are committed to the repository alongside the system or the ADR that owns them. Exported images are artifacts of the source, never the source itself.</li>
+    <li><strong>Levels move together.</strong> Because each level is a separate file, a change that alters more than one level updates every affected diagram in the same commit. Levels that contradict each other are worse than no diagrams at all.</li>
+  </ol>
+
+  <div class="good-bad">
+    <div class="gb good">
+      <div class="gb-h">A box that earns its place</div>
+      <div class="dbox container" style="max-width:280px;margin:0 auto">
+        <div class="bn">Ingest Gateway</div>
+        <div class="bt">[Container: Go / Kubernetes]</div>
+        <div class="bd">Validates, tags, and routes inbound evidence to isolation processing</div>
+      </div>
+    </div>
+    <div class="gb bad">
+      <div class="gb-h">A box that tells you nothing</div>
+      <div class="dbox" style="max-width:280px;margin:0 auto;background:#9AA1AB">
+        <div class="bn">Gateway</div>
+      </div>
+    </div>
+  </div>
+
+  <h3>Worked example · Level 1, System Context</h3>
+  <div class="diagram">
+    <div class="dg-title"><span class="madlib">[SYSTEM NAME]</span> · System Context</div>
+    <div class="drow">
+      <div class="dbox person"><div class="bn"><span class="madlib">[Analyst]</span></div><div class="bt">[Person]</div><div class="bd">Produces assessments using the system</div></div>
+      <div class="arrow"><span class="ln">─────▶</span>Uses via web UI [HTTPS]</div>
+      <div class="dbox system"><div class="bn"><span class="madlib">[SYSTEM NAME]</span></div><div class="bt">[Software System]</div><div class="bd"><span class="madlib">[One line: the value it delivers]</span></div></div>
+      <div class="arrow"><span class="ln">─────▶</span>Pulls holdings from [API]</div>
+      <div class="dbox ext"><div class="bn"><span class="madlib">[External Data System]</span></div><div class="bt">[External System]</div><div class="bd">Authoritative source for <span class="madlib">[data type]</span></div></div>
+    </div>
+    <div class="dg-key"><span><i style="background:#3A4657"></i>Person</span><span><i style="background:var(--l1)"></i>Our system</span><span><i style="background:#fff;border:1.5px solid #1A2330"></i>External system (hollow)</span></div>
+  </div>
+
+  <h3>Worked example · Level 2, Container</h3>
+  <div class="diagram">
+    <div class="dg-title"><span class="madlib">[SYSTEM NAME]</span> · Containers</div>
+    <div class="drow">
+      <div class="dbox container"><div class="bn">Web Application</div><div class="bt">[Container: <span class="madlib">[React]</span>]</div><div class="bd">Analyst-facing UI</div></div>
+      <div class="arrow"><span class="ln">─────▶</span>JSON/HTTPS</div>
+      <div class="dbox container"><div class="bn">API Service</div><div class="bt">[Container: <span class="madlib">[Java/Spring]</span>]</div><div class="bd">Business logic and access control</div></div>
+      <div class="arrow"><span class="ln">─────▶</span>Reads/writes</div>
+      <div class="dbox store"><div class="bn">Primary Store</div><div class="bt">[Container: <span class="madlib">[PostgreSQL]</span>]</div><div class="bd">System of record</div></div>
+    </div>
+    <div class="drow">
+      <div class="dbox container"><div class="bn">Event Processor</div><div class="bt">[Container: <span class="madlib">[Go]</span>]</div><div class="bd">Consumes upstream events, updates projections</div></div>
+      <div class="arrow"><span class="ln">─────▶</span>Subscribes [<span class="madlib">[NATS]</span>]</div>
+      <div class="dbox ext"><div class="bn">Message Bus</div><div class="bt">[External: shared platform]</div><div class="bd">Org-wide event backbone</div></div>
+    </div>
+    <div class="dg-key"><span><i style="background:var(--l2)"></i>Container</span><span><i style="background:var(--l2);border-radius:50%"></i>Data store</span><span><i style="background:#fff;border:1.5px solid #1A2330"></i>External (hollow)</span></div>
+  </div>
+
+  <h3>Worked example · Level 3, Component</h3>
+  <p>Zooming into one container from the Level 2 diagram, the API Service:</p>
+  <div class="diagram">
+    <div class="dg-title">API Service · Components</div>
+    <div class="drow">
+      <div class="dbox component"><div class="bn">Access Control</div><div class="bt">[Component: <span class="madlib">[Tech/framework]</span>]</div><div class="bd">Authenticates callers, enforces authorization policy per request</div></div>
+      <div class="arrow"><span class="ln">─────▶</span>Authorized requests</div>
+      <div class="dbox component"><div class="bn">Domain Logic</div><div class="bt">[Component: <span class="madlib">[Tech/framework]</span>]</div><div class="bd">Core business rules and workflow orchestration</div></div>
+      <div class="arrow"><span class="ln">─────▶</span>Persists via</div>
+      <div class="dbox component"><div class="bn">Data Access</div><div class="bt">[Component: <span class="madlib">[ORM/driver]</span>]</div><div class="bd">Repository layer over the primary store</div></div>
+    </div>
+    <div class="drow">
+      <div class="dbox component"><div class="bn">Audit Recorder</div><div class="bt">[Component: <span class="madlib">[Tech]</span>]</div><div class="bd">Writes immutable audit events for every state change</div></div>
+      <div class="arrow"><span class="ln">─────▶</span>Publishes [<span class="madlib">[NATS]</span>]</div>
+      <div class="dbox ext"><div class="bn">Message Bus</div><div class="bt">[External: shared platform]</div><div class="bd">Org-wide event backbone</div></div>
+    </div>
+    <div class="dg-key"><span><i style="background:var(--l3)"></i>Component (inside API Service)</span><span><i style="background:#fff;border:1.5px solid #1A2330"></i>External (hollow)</span></div>
+  </div>
+
+  <h3>Worked example · Level 4, Code</h3>
+  <p>Zooming into one component from the Level 3 diagram, the Access Control component. Remember the rule: this level is generated from source on demand, never hand-maintained. The example shows what generated output looks like:</p>
+  <div class="diagram">
+    <div class="dg-title">Access Control · Classes (generated <span class="madlib">[DATE]</span> from <span class="madlib">[REPO/PATH]</span>)</div>
+    <div class="drow">
+      <div class="classbox">
+        <div class="cb-h">AuthorizationService</div>
+        <div class="cb-s">- policyStore: PolicyStore<br>- tokenValidator: TokenValidator</div>
+        <div class="cb-s">+ authorize(request): Decision<br>+ validateToken(token): Claims</div>
+      </div>
+      <div class="arrow"><span class="ln">─────▶</span>uses</div>
+      <div class="classbox">
+        <div class="cb-h">PolicyStore</div>
+        <div class="cb-s">- cache: PolicyCache</div>
+        <div class="cb-s">+ policiesFor(subject): List~Policy~<br>+ refresh(): void</div>
+      </div>
+    </div>
+    <div class="dg-key"><span><i style="background:var(--l4)"></i>Class (generated from source)</span></div>
+  </div>
+
+  <h3>Worked example · System Landscape</h3>
+  <p>One level above Context: all systems and people across the organization, with the enterprise boundary explicit. This is the diagram convergence decisions live on.</p>
+  <div class="diagram">
+    <div class="dg-title"><span class="madlib">[ORG NAME]</span> · System Landscape</div>
+    <div class="drow">
+      <div class="dbox person"><div class="bn"><span class="madlib">[Analyst]</span></div><div class="bt">[Person]</div><div class="bd">Produces assessments</div></div>
+      <div class="dbox person"><div class="bn"><span class="madlib">[Mission Planner]</span></div><div class="bt">[Person]</div><div class="bd">Plans and tasks collection</div></div>
+    </div>
+    <div class="bndry">
+      <div class="bl"><span class="madlib">[ORG NAME]</span> · Enterprise Boundary</div>
+      <div class="drow">
+        <div class="dbox system"><div class="bn"><span class="madlib">[System A: Workbench]</span></div><div class="bt">[Software System]</div><div class="bd"><span class="madlib">[Value it delivers]</span></div></div>
+        <div class="arrow"><span class="ln">─────▶</span>Sends tasking to</div>
+        <div class="dbox system"><div class="bn"><span class="madlib">[System B: Planner]</span></div><div class="bt">[Software System]</div><div class="bd"><span class="madlib">[Value it delivers]</span></div></div>
+        <div class="dbox system"><div class="bn"><span class="madlib">[Governance Plane]</span></div><div class="bt">[Software System]</div><div class="bd">Cross-cutting policy, provenance, and monitoring</div></div>
+      </div>
+    </div>
+    <div class="drow">
+      <div class="dbox ext"><div class="bn"><span class="madlib">[External Data Provider]</span></div><div class="bt">[External System]</div><div class="bd">Authoritative source for <span class="madlib">[data type]</span></div></div>
+    </div>
+    <div class="dg-key"><span><i style="background:#3A4657"></i>Person</span><span><i style="background:var(--l1)"></i>Our systems</span><span><i style="background:#fff;border:1.5px dashed #4A5568;border-radius:3px"></i>Enterprise boundary</span><span><i style="background:#fff;border:1.5px solid #1A2330"></i>External (hollow)</span></div>
+  </div>
+
+  <h3>Worked example · Dynamic</h3>
+  <p>A numbered sequence for one scenario. Same elements as the Container diagram; the numbers are the story.</p>
+  <div class="diagram">
+    <div class="dg-title"><span class="madlib">[SYSTEM NAME]</span> · Dynamic · <span class="madlib">[Scenario: Evidence submission]</span></div>
+    <div class="drow">
+      <div class="dbox person"><div class="bn"><span class="madlib">[Analyst]</span></div><div class="bt">[Person]</div></div>
+      <div class="arrow"><span class="seqn">1</span>Submits evidence package [HTTPS]<span class="ln">─────▶</span></div>
+      <div class="dbox container"><div class="bn">Web Application</div><div class="bt">[Container: <span class="madlib">[React]</span>]</div></div>
+      <div class="arrow"><span class="seqn">2</span>POST /evidence [JSON/HTTPS]<span class="ln">─────▶</span></div>
+      <div class="dbox container"><div class="bn">API Service</div><div class="bt">[Container: <span class="madlib">[Java/Spring]</span>]</div></div>
+    </div>
+    <div class="drow">
+      <div class="arrow"><span class="seqn">3</span>Writes record [SQL/TLS]<span class="ln">─────▶</span></div>
+      <div class="dbox store"><div class="bn">Primary Store</div><div class="bt">[Container: <span class="madlib">[PostgreSQL]</span>]</div></div>
+      <div class="arrow"><span class="seqn">4</span>Returns receipt with custody ID<span class="ln">◀─────</span></div>
+    </div>
+    <div class="dg-key"><span><span class="seqn" style="margin-right:4px">n</span>Ordered step in the scenario</span></div>
+  </div>
+
+  <h3>Worked example · Deployment</h3>
+  <p>Containers from the Level 2 diagram mapped onto AWS infrastructure. Deployment is the one diagram type that uses vendor icons (official AWS Architecture Icons, shown here as placeholder chips); nesting shows the hosting hierarchy, and one diagram covers one environment. Labels carry the meaning; icons reinforce it.</p>
+  <div class="diagram">
+    <div class="dg-title"><span class="madlib">[SYSTEM NAME]</span> · Deployment · <span class="madlib">[Environment: Production enclave]</span></div>
+    <div class="dnode">
+      <div class="bl"><span class="awsicon">AWS</span>Group · <span class="madlib">[Hosting environment, e.g., GovCloud region]</span></div>
+      <div class="dnode">
+        <div class="bl"><span class="awsicon">EKS</span>Group · EKS Cluster [<span class="madlib">[Distribution/version]</span>]</div>
+        <div class="drow" style="margin:4px 0">
+          <div class="dbox container"><div class="bn"><span class="awsicon">FARGATE</span>API Service</div><div class="bt">[<span class="madlib">[Java/Spring]</span>]</div><div class="bd"><span class="madlib">[Replicas: 3]</span></div></div>
+          <div class="dbox container"><div class="bn"><span class="awsicon">FARGATE</span>Event Processor</div><div class="bt">[<span class="madlib">[Go]</span>]</div><div class="bd"><span class="madlib">[Replicas: 2]</span></div></div>
+        </div>
+      </div>
+      <div class="dnode">
+        <div class="bl"><span class="awsicon">RDS</span>Group · Managed Database [<span class="madlib">[Service tier]</span>]</div>
+        <div class="drow" style="margin:4px 0">
+          <div class="dbox store"><div class="bn">Primary Store</div><div class="bt">[Container: <span class="madlib">[PostgreSQL]</span>]</div><div class="bd">System of record</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="dnode">
+      <div class="bl">Analyst Workstation [Browser] · built-in icon: internet</div>
+      <div class="drow" style="margin:4px 0">
+        <div class="dbox container"><div class="bn">Web Application</div><div class="bt">[Container: <span class="madlib">[React]</span>]</div><div class="bd">Served to the browser</div></div>
+      </div>
+    </div>
+    <div class="dg-key"><span><i style="background:#F4F5F2;border:1.5px solid #4A5568;border-radius:3px"></i>Group (nesting = hosting hierarchy)</span><span><i style="background:var(--l2)"></i>Service instance</span><span><i style="background:#232F3E"></i>AWS icon (official pack; placeholder chips shown here)</span></div>
+  </div>
+
+  <h4>Alternative · C4Deployment form (no icons)</h4>
+  <p>The same environment in the fallback <code class="inline">C4Deployment</code> form, for renderers without the icon pipeline. Identical structure and labels; only the notation differs:</p>
+  <div class="diagram">
+    <div class="dg-title"><span class="madlib">[SYSTEM NAME]</span> · Deployment · <span class="madlib">[Environment: Production enclave]</span></div>
+    <div class="dnode">
+      <div class="bl">Deployment Node · <span class="madlib">[Hosting environment, e.g., GovCloud region]</span></div>
+      <div class="dnode">
+        <div class="bl">Deployment Node · Kubernetes Cluster [<span class="madlib">[Distribution/version]</span>]</div>
+        <div class="drow" style="margin:4px 0">
+          <div class="dbox container"><div class="bn">API Service</div><div class="bt">[Container: <span class="madlib">[Java/Spring]</span>]</div><div class="bd"><span class="madlib">[Replicas: 3]</span></div></div>
+          <div class="dbox container"><div class="bn">Event Processor</div><div class="bt">[Container: <span class="madlib">[Go]</span>]</div><div class="bd"><span class="madlib">[Replicas: 2]</span></div></div>
+        </div>
+      </div>
+      <div class="dnode">
+        <div class="bl">Deployment Node · Managed Database [<span class="madlib">[Service tier]</span>]</div>
+        <div class="drow" style="margin:4px 0">
+          <div class="dbox store"><div class="bn">Primary Store</div><div class="bt">[Container: <span class="madlib">[PostgreSQL]</span>]</div><div class="bd">System of record</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="dnode">
+      <div class="bl">Deployment Node · Analyst Workstation [Browser]</div>
+      <div class="drow" style="margin:4px 0">
+        <div class="dbox container"><div class="bn">Web Application</div><div class="bt">[Container: <span class="madlib">[React]</span>]</div><div class="bd">Served to the browser</div></div>
+      </div>
+    </div>
+    <div class="dg-key"><span><i style="background:#F4F5F2;border:1.5px solid #4A5568;border-radius:3px"></i>Deployment node (nesting = hosting hierarchy)</span><span><i style="background:var(--l2)"></i>Container instance</span></div>
+  </div>
+</section>
+
+<!-- ================= TEMPLATES ================= -->
+<section id="templates">
+  <div class="sec-head"><span class="sec-num mono">03</span><h2>Templates for Teams</h2></div>
+  <p class="lede">Mermaid is our standard diagram source: it renders natively in our repositories and embeds directly in ADRs. One template per level; copy, fill the highlights, commit the source next to the system or ADR it describes.</p>
+
+  <h3><span class="lvl-tag tag1">Level 1</span>System Context template</h3>
+  <pre>C4Context
+    title <span class="madlib">[SYSTEM NAME]</span> · System Context
+
+    Person(analyst, "<span class="madlib">[User Role]</span>", "<span class="madlib">[What they do with the system]</span>")
+
+    System(mainSystem, "<span class="madlib">[SYSTEM NAME]</span>", "<span class="madlib">[One line: the value it delivers]</span>")
+
+    System_Ext(extSystem, "<span class="madlib">[External System]</span>", "<span class="madlib">[What it provides]</span>")
+
+    Rel(analyst, mainSystem, "Uses", "<span class="madlib">[HTTPS]</span>")
+    Rel(mainSystem, extSystem, "<span class="madlib">[Pulls holdings from]</span>", "<span class="madlib">[REST]</span>")
+
+    UpdateLayoutConfig($c4ShapeInRow="3")</pre>
+
+  <h3><span class="lvl-tag tag2">Level 2</span>Container template</h3>
+  <pre>C4Container
+    title <span class="madlib">[SYSTEM NAME]</span> · Containers
+
+    Person(analyst, "<span class="madlib">[User Role]</span>", "<span class="madlib">[What they do]</span>")
+
+    System_Boundary(sys, "<span class="madlib">[SYSTEM NAME]</span>") {
+        Container(webapp, "Web Application", "<span class="madlib">[React]</span>", "<span class="madlib">[Purpose]</span>")
+        Container(api, "API Service", "<span class="madlib">[Java/Spring]</span>", "<span class="madlib">[Purpose]</span>")
+        Container(worker, "Event Processor", "<span class="madlib">[Go]</span>", "<span class="madlib">[Purpose]</span>")
+        ContainerDb(store, "Primary Store", "<span class="madlib">[PostgreSQL]</span>", "System of record")
+    }
+
+    System_Ext(bus, "Message Bus", "Org-wide event backbone")
+
+    Rel(analyst, webapp, "Uses", "HTTPS")
+    Rel(webapp, api, "Calls", "JSON/HTTPS")
+    Rel(api, store, "Reads from and writes to", "<span class="madlib">[SQL/TLS]</span>")
+    Rel(worker, bus, "Subscribes to", "<span class="madlib">[NATS]</span>")
+    Rel(worker, store, "Updates projections in", "<span class="madlib">[SQL/TLS]</span>")</pre>
+
+  <h3><span class="lvl-tag tag3">Level 3</span>Component template</h3>
+  <pre>C4Component
+    title <span class="madlib">[CONTAINER NAME, e.g., API Service]</span> · Components
+
+    Container_Boundary(api, "<span class="madlib">[CONTAINER NAME]</span>") {
+        Component(authz, "Access Control", "<span class="madlib">[Tech/framework]</span>", "<span class="madlib">[Responsibility]</span>")
+        Component(domain, "Domain Logic", "<span class="madlib">[Tech/framework]</span>", "<span class="madlib">[Responsibility]</span>")
+        Component(data, "Data Access", "<span class="madlib">[ORM/driver]</span>", "<span class="madlib">[Responsibility]</span>")
+        Component(audit, "Audit Recorder", "<span class="madlib">[Tech]</span>", "<span class="madlib">[Responsibility]</span>")
+    }
+
+    ContainerDb(store, "Primary Store", "<span class="madlib">[PostgreSQL]</span>", "System of record")
+    System_Ext(bus, "Message Bus", "Org-wide event backbone")
+
+    Rel(authz, domain, "Passes authorized requests to")
+    Rel(domain, data, "Persists via")
+    Rel(data, store, "Reads/writes", "<span class="madlib">[SQL/TLS]</span>")
+    Rel(audit, bus, "Publishes audit events to", "<span class="madlib">[NATS]</span>")</pre>
+
+  <h3><span class="lvl-tag tag4">Level 4</span>Code template</h3>
+  <p>Level 4 is generated from source on demand, never hand-maintained. Use this classDiagram form only in the rare case an ADR needs to illustrate a code-level structure, and label it with the generation date and source path so its shelf life is explicit.</p>
+  <pre>classDiagram
+    title <span class="madlib">[COMPONENT NAME]</span> · Classes (generated <span class="madlib">[DATE]</span> from <span class="madlib">[REPO/PATH]</span>)
+
+    class AuthorizationService {
+        -PolicyStore policyStore
+        -TokenValidator tokenValidator
+        +authorize(request) Decision
+        +validateToken(token) Claims
+    }
+    class PolicyStore {
+        -PolicyCache cache
+        +policiesFor(subject) List~Policy~
+        +refresh() void
+    }
+    AuthorizationService --> PolicyStore : uses</pre>
+
+  <h3>System Landscape template</h3>
+  <p>Mermaid has no dedicated landscape type; use <code class="inline">C4Context</code> with an <code class="inline">Enterprise_Boundary</code> holding all our systems:</p>
+  <pre>C4Context
+    title <span class="madlib">[ORG NAME]</span> · System Landscape
+
+    Person(analyst, "<span class="madlib">[Analyst]</span>", "<span class="madlib">[What they do]</span>")
+    Person(planner, "<span class="madlib">[Mission Planner]</span>", "<span class="madlib">[What they do]</span>")
+
+    Enterprise_Boundary(org, "<span class="madlib">[ORG NAME]</span>") {
+        System(sysA, "<span class="madlib">[System A: Workbench]</span>", "<span class="madlib">[Value it delivers]</span>")
+        System(sysB, "<span class="madlib">[System B: Planner]</span>", "<span class="madlib">[Value it delivers]</span>")
+        System(gov,  "<span class="madlib">[Governance Plane]</span>", "Cross-cutting policy, provenance, monitoring")
+    }
+
+    System_Ext(extData, "<span class="madlib">[External Data Provider]</span>", "Authoritative source for <span class="madlib">[data type]</span>")
+
+    Rel(analyst, sysA, "Uses", "HTTPS")
+    Rel(planner, sysB, "Uses", "HTTPS")
+    Rel(sysB, sysA, "Sends tasking to", "<span class="madlib">[protocol]</span>")
+    Rel(sysA, extData, "Pulls from", "<span class="madlib">[REST]</span>")
+    Rel(gov, sysA, "Governs")
+    Rel(gov, sysB, "Governs")</pre>
+
+  <h3>Dynamic template</h3>
+  <p>Same element syntax as the level it draws from; <code class="inline">RelIndex</code> numbers the steps. One scenario per diagram, named in the title:</p>
+  <pre>C4Dynamic
+    title <span class="madlib">[SYSTEM NAME]</span> · Dynamic · <span class="madlib">[Scenario: Evidence submission]</span>
+
+    Person(analyst, "<span class="madlib">[Analyst]</span>")
+    Container(webapp, "Web Application", "<span class="madlib">[React]</span>", "<span class="madlib">[Purpose]</span>")
+    Container(api, "API Service", "<span class="madlib">[Java/Spring]</span>", "<span class="madlib">[Purpose]</span>")
+    ContainerDb(store, "Primary Store", "<span class="madlib">[PostgreSQL]</span>", "System of record")
+
+    RelIndex(1, analyst, webapp, "Submits evidence package", "HTTPS")
+    RelIndex(2, webapp, api, "POST /evidence", "JSON/HTTPS")
+    RelIndex(3, api, store, "Writes record", "<span class="madlib">[SQL/TLS]</span>")
+    RelIndex(4, api, webapp, "Returns receipt with custody ID")</pre>
+
+  <h3>Deployment template (AWS icons)</h3>
+  <p>Deployment diagrams are the one place we use vendor iconography, because at this level the infrastructure <em>is</em> the content. They use Mermaid's <code class="inline">architecture-beta</code> type (v11+) with the official AWS Architecture Icons registered as an Iconify pack, since the C4 diagram types don't support icons. Groups nest to show the hosting hierarchy; one diagram per environment where environments differ.</p>
+  <pre>architecture-beta
+    group region(aws:aws-cloud)[<span class="madlib">[Hosting environment, e.g., GovCloud region]</span>]
+
+    group cluster(aws:amazon-eks)[<span class="madlib">[EKS Cluster / distribution and version]</span>] in region
+        service api(aws:aws-fargate)[API Service <span class="madlib">[Java or Spring, replicas 3]</span>] in cluster
+        service worker(aws:aws-fargate)[Event Processor <span class="madlib">[Go, replicas 2]</span>] in cluster
+
+    group data(aws:amazon-rds)[Managed Database <span class="madlib">[Service tier]</span>] in region
+        service store(aws:amazon-rds-postgresql-instance)[Primary Store <span class="madlib">[PostgreSQL]</span>] in data
+
+    service bus(aws:amazon-managed-streaming-for-apache-kafka)[Message Bus <span class="madlib">[Shared platform]</span>] in region
+    service webapp(internet)[Web Application <span class="madlib">[React, served to browser]</span>]
+
+    webapp:R --> L:api
+    api:R --> L:store
+    worker:B --> T:bus</pre>
+
+  <h4>One-time renderer setup</h4>
+  <p>The AWS icon pack is registered in the Mermaid initialization of whatever renders our docs. We self-host the pack JSON; external fetches to unpkg or GitHub won't work on our networks:</p>
+  <pre>import mermaid from 'mermaid';
+
+mermaid.registerIconPacks([
+  {
+    name: 'aws',
+    loader: () =>
+      fetch('<span class="madlib">[INTERNAL HOST]/icon-packs/aws-icons.json</span>').then((res) => res.json()),
+  },
+]);</pre>
+
+  <h4>Deployment diagram rules</h4>
+  <ul class="plain">
+    <li><strong>Icons supplement labels, never replace them.</strong> Every service still carries its name, technology, and detail in the bracket label. The diagram must survive grayscale printing and a reader who doesn't know the icon.</li>
+    <li><strong>Commit the rendered SVG alongside the source.</strong> <code class="inline">architecture-beta</code> with custom icon packs does not render in stock repository markdown previews, so the rendering pipeline exports an SVG that gets committed next to the <code class="inline">.mmd</code> source. The source remains authoritative.</li>
+    <li><strong>Icon pack is standardized:</strong> the org-hosted AWS Architecture Icons pack, registered under the <code class="inline">aws:</code> prefix at <span class="madlib">[INTERNAL HOST/PATH]</span>. Browse available icon names at <span class="madlib">[INTERNAL CATALOG LINK]</span>. No ad hoc icon packs.</li>
+    <li><strong>Non-AWS elements use Mermaid's built-in icons</strong> (<code class="inline">cloud</code>, <code class="inline">database</code>, <code class="inline">disk</code>, <code class="inline">server</code>, <code class="inline">internet</code>) rather than mismatched vendor art.</li>
+    <li><strong>All other notation rules still apply:</strong> title with environment, one environment per diagram, key included, change palette via the <code class="inline">[NEW]</code> / <code class="inline">[CHANGED]</code> / <code class="inline">[REMOVED]</code> tags in labels for ADR to-be versions.</li>
+  </ul>
+
+  <h3>Deployment template · C4Deployment alternative</h3>
+  <p>Where the AWS-icon pipeline isn't available (a renderer you don't control, an air-gapped repo without the SVG export step, or non-AWS hosting), fall back to the standard <code class="inline">C4Deployment</code> type. It renders anywhere the other C4 diagrams do and needs no icon pack. Same rules: nesting shows the hosting hierarchy, one diagram per environment where environments differ.</p>
+  <pre>C4Deployment
+    title <span class="madlib">[SYSTEM NAME]</span> · Deployment · <span class="madlib">[Environment: Production enclave]</span>
+
+    Deployment_Node(cloud, "<span class="madlib">[Hosting environment]</span>", "<span class="madlib">[e.g., GovCloud region]</span>") {
+        Deployment_Node(k8s, "Kubernetes Cluster", "<span class="madlib">[Distribution/version]</span>") {
+            Container(api, "API Service", "<span class="madlib">[Java/Spring]</span>", "<span class="madlib">[Replicas: 3]</span>")
+            Container(worker, "Event Processor", "<span class="madlib">[Go]</span>", "<span class="madlib">[Replicas: 2]</span>")
+        }
+        Deployment_Node(dbnode, "Managed Database", "<span class="madlib">[Service tier]</span>") {
+            ContainerDb(store, "Primary Store", "<span class="madlib">[PostgreSQL]</span>", "System of record")
+        }
+    }
+
+    Deployment_Node(ws, "Analyst Workstation", "Browser") {
+        Container(webapp, "Web Application", "<span class="madlib">[React]</span>", "Served to the browser")
+    }
+
+    Rel(webapp, api, "Calls", "JSON/HTTPS")
+    Rel(api, store, "Reads from and writes to", "<span class="madlib">[SQL/TLS]</span>")</pre>
+  <p class="rule-note" style="font-size:14px;color:var(--ink-soft);font-style:italic">Pick one form per system and stay with it: the AWS-icon version is the default; the C4Deployment fallback is for environments that can't render it. Don't maintain both for the same system.</p>
+
+  <h3>Pre-review checklist</h3>
+  <p>Run this before any diagram goes to a design review or the architecture council:</p>
+  <div class="card">
+    <ul class="plain" style="margin-left:0;list-style:none">
+      <li>☐ Title states the system and the level</li>
+      <li>☐ Every element has name, type, technology (where applicable), and a one-line responsibility</li>
+      <li>☐ Every relationship is labeled with intent, and technology where it matters</li>
+      <li>☐ Exactly one zoom level on the diagram</li>
+      <li>☐ Key/legend present</li>
+      <li>☐ External systems visually distinct from ours</li>
+      <li>☐ Mermaid source committed; image is an export, not the source</li>
+      <li>☐ Fits its audience: could the intended reader understand it without you narrating?</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ================= ADR ================= -->
+<section id="adr">
+  <div class="sec-head"><span class="sec-num mono">04</span><h2>Use in ADRs</h2></div>
+  <p class="lede">An architectural decision without a diagram is a claim. The diagram is the evidence. Every ADR that changes structure carries C4 diagrams at the level of the decision.</p>
+
+  <h3>Match the diagram level to the decision type</h3>
+  <table>
+    <tr><th>Decision type</th><th>Required diagram level</th><th>Examples</th></tr>
+    <tr><td>System boundary, new external dependency, mission interface</td><td><span class="lvl-tag tag1">Level 1</span>Context (and System Landscape for portfolio-wide moves)</td><td>Integrating a new external data provider; splitting or merging systems during convergence</td></tr>
+    <tr><td>Platform or technology selection, service topology, data store choice, protocol change</td><td><span class="lvl-tag tag2">Level 2</span>Container</td><td>Replacing a message broker; consolidating duplicated services into a shared platform capability</td></tr>
+    <tr><td>Internal design of a high-risk or high-complexity container</td><td><span class="lvl-tag tag3">Level 3</span>Component</td><td>Restructuring an access-control layer; introducing a new processing pipeline inside a service</td></tr>
+    <tr><td>Deployment, hosting, accreditation boundary</td><td>Deployment diagram</td><td>Moving a workload between enclaves; environment topology changes</td></tr>
+    <tr><td>Critical workflow or failure behavior</td><td>Dynamic diagram</td><td>Documenting the degraded-mode path a decision introduces</td></tr>
+  </table>
+  <p class="callout"><strong>Rule of thumb:</strong> most ADRs need exactly one level, usually Container. If you can't name which level your decision lives at, you haven't isolated the decision yet.</p>
+
+  <h3>Where diagrams go in our MADR template</h3>
+  <ul class="plain">
+    <li><strong>Context and Problem Statement:</strong> the <strong>as-is</strong> diagram. Show the current structure the decision responds to. If no diagram of the current state exists, drawing it is the first step of the ADR, and it gets committed regardless of which option wins.</li>
+    <li><strong>Considered Options:</strong> diagrams optional. Sketch an option only when the structural difference between options is the point of comparison; otherwise prose keeps this section light.</li>
+    <li><strong>Decision Outcome:</strong> the <strong>to-be</strong> diagram. Same system, same level, same layout conventions as the as-is, so the diff is visible at a glance. This diagram becomes the authoritative picture of the target once the ADR is accepted.</li>
+    <li><strong>Consequences:</strong> reference the delta in words: which containers appear, disappear, or change technology, and which relationships change. Durable rationale means a reader in three years can reconstruct why the shape changed.</li>
+  </ul>
+
+  <h3>The change palette</h3>
+  <p>In ADR to-be diagrams, color encodes change state, not level (the title carries the level). This makes the decision's footprint readable at a glance: gray is the world you're not touching, blue is what the decision creates or changes, red is what it removes.</p>
+  <table>
+    <tr><th>State</th><th>Treatment</th><th>Tag</th></tr>
+    <tr><td><strong>Unchanged</strong></td><td>Gray fill</td><td>none</td></tr>
+    <tr><td><strong>New</strong></td><td>Blue fill</td><td><code class="inline">[NEW]</code></td></tr>
+    <tr><td><strong>Changed</strong></td><td>Blue fill</td><td><code class="inline">[CHANGED]</code> plus a one-line note of what changed (technology, protocol, responsibility)</td></tr>
+    <tr><td><strong>Removed</strong></td><td>Pale red fill, dashed red border, name struck through</td><td><code class="inline">[REMOVED]</code></td></tr>
+    <tr><td><strong>External system</strong></td><td>Hollow (white fill, solid outline), never gray</td><td><code class="inline">[External]</code></td></tr>
+  </table>
+  <ul class="plain">
+    <li><strong>The v1 rule:</strong> in the first ADR for a system, everything is blue with <code class="inline">[NEW]</code>. From then on, every subsequent ADR shows gray except its own footprint.</li>
+    <li><strong>Tags are mandatory, color is reinforcement.</strong> Diagrams get printed in grayscale and read by colorblind reviewers; the <code class="inline">[NEW]</code> / <code class="inline">[CHANGED]</code> / <code class="inline">[REMOVED]</code> tags carry the meaning on their own.</li>
+    <li><strong>Removals appear, then disappear.</strong> A removed element is shown in the to-be diagram in removal treatment so the decision to remove it is explicit and reviewable. Once the ADR is accepted and merged, it's deleted from the canonical diagram set entirely.</li>
+    <li><strong>Changed relationships follow the same scheme:</strong> new or modified arrows in blue with their label noting the change; removed arrows dashed red.</li>
+    <li><strong>As-is diagrams stay neutral:</strong> all internal elements gray, externals hollow. The as-is has no changes by definition; the palette does its work on the to-be.</li>
+  </ul>
+
+  <h4>Example · to-be diagram footprint</h4>
+  <div class="diagram">
+    <div class="dg-title"><span class="madlib">[SYSTEM NAME]</span> · Containers · To-Be (ADR-<span class="madlib">[###]</span>)</div>
+    <div class="drow">
+      <div class="dbox unchg"><div class="bn">Web Application</div><div class="bt">[Container: <span class="madlib">[React]</span>]</div><div class="bd">Analyst-facing UI</div></div>
+      <div class="dbox chg"><div class="bn">API Service<span class="state-tag">CHANGED</span></div><div class="bt">[Container: <span class="madlib">[Java/Spring]</span>]</div><div class="bd">Now publishes audit events to the shared bus</div></div>
+      <div class="dbox newel"><div class="bn">Audit Projection Service<span class="state-tag">NEW</span></div><div class="bt">[Container: <span class="madlib">[Go]</span>]</div><div class="bd">Builds queryable audit views from the event stream</div></div>
+    </div>
+    <div class="drow">
+      <div class="dbox rm"><div class="bn">Legacy Audit DB<span class="state-tag">REMOVED</span></div><div class="bt">[Container: <span class="madlib">[Oracle]</span>]</div><div class="bd">Superseded by the event-sourced audit projection</div></div>
+      <div class="dbox ext"><div class="bn">Message Bus</div><div class="bt">[External: shared platform]</div><div class="bd">Org-wide event backbone</div></div>
+    </div>
+    <div class="dg-key"><span><i style="background:#8A8F98"></i>Unchanged</span><span><i style="background:#2447C9"></i>New / Changed</span><span><i style="background:#FBEAE6;border:1.5px dashed #B3402A"></i>Removed</span><span><i style="background:#fff;border:1.5px solid #1A2330"></i>External (hollow)</span></div>
+  </div>
+
+  <h4>Mermaid implementation</h4>
+  <p>Apply the palette with <code class="inline">UpdateElementStyle</code> after declaring elements, and put the state tag in the element name:</p>
+  <pre><span class="cm">%% after Container(...) declarations in the to-be diagram</span>
+Container(audit, "Audit Projection Service [NEW]", "<span class="madlib">[Go]</span>", "Builds queryable audit views")
+Container(api, "API Service [CHANGED]", "<span class="madlib">[Java/Spring]</span>", "Now publishes audit events")
+Container(legacy, "Legacy Audit DB [REMOVED]", "<span class="madlib">[Oracle]</span>", "Superseded by audit projection")
+
+UpdateElementStyle(webapp,  $bgColor="#8A8F98", $borderColor="#8A8F98")   <span class="cm">%% unchanged</span>
+UpdateElementStyle(api,     $bgColor="#2447C9", $borderColor="#2447C9")   <span class="cm">%% changed</span>
+UpdateElementStyle(audit,   $bgColor="#2447C9", $borderColor="#2447C9")   <span class="cm">%% new</span>
+UpdateElementStyle(legacy,  $bgColor="#FBEAE6", $fontColor="#B3402A", $borderColor="#B3402A")  <span class="cm">%% removed</span>
+UpdateElementStyle(bus,     $bgColor="#FFFFFF", $fontColor="#1A2330", $borderColor="#1A2330")  <span class="cm">%% external</span></pre>
+
+  <h3>Mechanics</h3>
+  <ol class="plain">
+    <li><strong>As-is / to-be pairs are mandatory</strong> for any ADR that changes structure. A to-be without an as-is hides the cost of the change.</li>
+    <li><strong>Diagram source lives with the ADR.</strong> Commit the Mermaid source in the ADR's directory. Rendered images are generated, never hand-edited.</li>
+    <li><strong>Accepted means canonical.</strong> When the council accepts the ADR, the to-be diagram is merged into the system's canonical diagram set. The canonical model always reflects accepted decisions plus reality, and drift between the two is a defect.</li>
+    <li><strong>Superseding updates the picture.</strong> An ADR that supersedes another must update the canonical model in the same change. No orphaned diagrams.</li>
+    <li><strong>Convergence ADRs use the System Landscape.</strong> Disposition decisions (invest, sustain, converge, sunset) show the landscape before and after, so the portfolio-level effect of each convergence call is visible to the council and traceable to the future state reference architecture.</li>
+  </ol>
+</section>
+
+<!-- ================= GOVERNANCE ================= -->
+<section id="governance">
+  <div class="sec-head"><span class="sec-num mono">05</span><h2>Governance</h2></div>
+  <ul class="plain">
+    <li><strong>Ownership:</strong> the architecture council owns this standard and the canonical models. Each system's owning team maintains its canonical diagram set; the council maintains the System Landscape and the future state reference architecture.</li>
+    <li><strong>Design reviews check the diagram first.</strong> A review of structural work begins with the relevant C4 diagram at the right level. No diagram, no review.</li>
+    <li><strong>Drift control:</strong> the canonical model is checked against reality at <span class="madlib">[CADENCE, e.g., each quarterly future state review]</span>. Divergence is either fixed in the system or ratified in an ADR; silent divergence is not an option.</li>
+    <li><strong>Tooling:</strong> <span class="madlib">[APPROVED TOOLS AND LOCATIONS, e.g., Mermaid sources at REPO PATH per system; ADR-embedded diagrams inline; rendering pipeline details]</span></li>
+    <li><strong>Onboarding:</strong> every new engineer reads this standard and their portfolio's Level 1 and Level 2 diagrams in week one. If those two diagrams can't get a new engineer oriented, the diagrams need work.</li>
+    <li><strong>Exceptions</strong> to this standard require an ADR. Naturally.</li>
+  </ul>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <span class="mono"><span class="madlib">[ORG NAME]</span> ENGINEERING STANDARD · C4 DIAGRAMS</span><br>
+    Highlighted text marks org-specific fills. Companion to the ADR practice and the future state reference architecture.
+  </div>
+</footer>
+
+</body>
+</html>

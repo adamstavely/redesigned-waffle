@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Technical Director: First 90 Days</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Condensed:wght@600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FAFAF7;
+    --panel:#FFFFFF;
+    --ink:#1A2330;
+    --ink-soft:#4A5568;
+    --line:#DDE1DA;
+    --p1:#C77D2A;   /* Phase 1: Listen and Declare */
+    --p2:#2447C9;   /* Phase 2: Demonstrate */
+    --p3:#2E7D4F;   /* Phase 3: Delegate and Measure */
+    --staff:#7A3E9D; /* staff-only comms */
+    --lead:#8A8F98;  /* leadership-only comms */
+    --mark:#FFF3D6;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'IBM Plex Sans',system-ui,sans-serif;
+    font-size:16px;line-height:1.6;
+  }
+  .mono{font-family:'IBM Plex Mono',monospace}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 20px}
+
+  /* ============ header ============ */
+  header{
+    border-bottom:1px solid var(--line);
+    background:var(--panel);
+    padding:40px 0 0;
+  }
+  .eyebrow{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--ink-soft);
+  }
+  h1{
+    font-family:'IBM Plex Sans Condensed',sans-serif;
+    font-weight:700;font-size:clamp(34px,5vw,56px);
+    line-height:1.05;letter-spacing:-0.01em;margin:10px 0 6px;
+  }
+  .subtitle{color:var(--ink-soft);max-width:62ch;margin-bottom:18px}
+  .meta-row{display:flex;gap:28px;flex-wrap:wrap;padding:14px 0;border-top:1px dashed var(--line);font-size:14px}
+  .meta-row .k{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft);display:block}
+  .meta-row .v{font-weight:600}
+
+  /* ============ signature: 90-day timeline ============ */
+  .timeline-block{padding:26px 0 34px}
+  .timeline-title{font-family:'IBM Plex Sans Condensed',sans-serif;font-weight:600;font-size:14px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:14px}
+  .runway{position:relative;height:112px}
+  .runway .bar{position:absolute;left:0;right:0;top:64px;height:8px;border-radius:4px;overflow:hidden;display:flex}
+  .runway .bar span{height:100%}
+  .runway .bar .seg1{width:33.3%;background:var(--p1)}
+  .runway .bar .seg2{width:33.3%;background:var(--p2)}
+  .runway .bar .seg3{width:33.4%;background:var(--p3)}
+  .tick{position:absolute;top:44px;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;cursor:pointer;text-decoration:none;color:var(--ink)}
+  .tick .dot{width:12px;height:12px;border-radius:50%;border:2px solid var(--panel);box-shadow:0 0 0 1px var(--line);margin-top:14px}
+  .tick .lbl{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--ink-soft);margin-top:6px;white-space:nowrap}
+  .tick .name{position:absolute;bottom:100%;margin-bottom:2px;font-size:10.5px;font-weight:600;white-space:nowrap;transform:rotate(-32deg);transform-origin:bottom left;color:var(--ink-soft)}
+  .tick:hover .name{color:var(--ink)}
+  .dot.all{background:var(--ink)}
+  .dot.staff{background:var(--staff)}
+  .dot.lead{background:var(--lead)}
+  .legend{display:flex;gap:22px;flex-wrap:wrap;margin-top:12px;font-size:12.5px;color:var(--ink-soft)}
+  .legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px}
+  .phase-labels{display:flex;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;margin-top:8px}
+  .phase-labels div{width:33.3%}
+  .phase-labels .pl1{color:var(--p1)}
+  .phase-labels .pl2{color:var(--p2)}
+  .phase-labels .pl3{color:var(--p3)}
+
+  /* ============ nav ============ */
+  nav.toc{
+    position:sticky;top:0;z-index:50;background:var(--panel);
+    border-bottom:1px solid var(--line);
+  }
+  nav.toc .wrap{display:flex;gap:4px;overflow-x:auto;padding:0 20px}
+  nav.toc a{
+    font-family:'IBM Plex Sans Condensed',sans-serif;font-weight:600;
+    font-size:14px;letter-spacing:.02em;text-decoration:none;color:var(--ink-soft);
+    padding:13px 14px;white-space:nowrap;border-bottom:3px solid transparent;
+  }
+  nav.toc a:hover{color:var(--ink)}
+  nav.toc a.n1{border-color:transparent}
+  nav.toc a:hover{border-bottom-color:var(--line)}
+
+  /* ============ sections ============ */
+  section{padding:46px 0 10px}
+  .sec-head{display:flex;align-items:baseline;gap:14px;margin-bottom:8px}
+  .sec-num{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--ink-soft)}
+  h2{
+    font-family:'IBM Plex Sans Condensed',sans-serif;font-weight:700;
+    font-size:clamp(24px,3vw,34px);letter-spacing:-.01em;
+  }
+  h2 .phase-chip{display:inline-block;vertical-align:middle;margin-left:12px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#fff;border-radius:3px;padding:3px 8px;position:relative;top:-4px}
+  .chip1{background:var(--p1)}.chip2{background:var(--p2)}.chip3{background:var(--p3)}
+  h3{
+    font-family:'IBM Plex Sans Condensed',sans-serif;font-weight:600;
+    font-size:20px;margin:26px 0 8px;
+  }
+  h4{font-size:15px;font-weight:600;margin:18px 0 6px;letter-spacing:.02em}
+  p{margin:8px 0;max-width:78ch}
+  .lede{font-size:17px;color:var(--ink-soft);max-width:70ch}
+
+  .card{
+    background:var(--panel);border:1px solid var(--line);border-radius:8px;
+    padding:20px 24px;margin:16px 0;
+  }
+  .card.accent1{border-left:4px solid var(--p1)}
+  .card.accent2{border-left:4px solid var(--p2)}
+  .card.accent3{border-left:4px solid var(--p3)}
+
+  .callout{
+    background:var(--mark);border:1px solid #EAD9A8;border-radius:8px;
+    padding:14px 18px;margin:16px 0;font-size:15px;max-width:78ch;
+  }
+  .callout strong{font-weight:600}
+
+  /* checklists */
+  ul.check{list-style:none;margin:6px 0}
+  ul.check li{display:flex;gap:10px;align-items:flex-start;padding:5px 0;max-width:80ch}
+  ul.check input[type=checkbox]{margin-top:5px;width:15px;height:15px;accent-color:var(--ink);flex-shrink:0}
+  ul.check label{cursor:pointer}
+  ul.check input:checked + label{color:var(--ink-soft);text-decoration:line-through;text-decoration-color:var(--line);text-decoration-thickness:1.5px}
+  .day-tag{font-family:'IBM Plex Mono',monospace;font-size:11.5px;background:var(--ink);color:#fff;border-radius:3px;padding:1px 7px;margin-right:7px;white-space:nowrap}
+  .day-tag.t-staff{background:var(--staff)}
+  .day-tag.t-lead{background:var(--lead)}
+
+  /* tables */
+  table{border-collapse:collapse;width:100%;margin:14px 0;background:var(--panel);border:1px solid var(--line);border-radius:8px;overflow:hidden;font-size:14.5px}
+  th{font-family:'IBM Plex Sans Condensed',sans-serif;font-weight:600;text-align:left;background:var(--ink);color:#fff;padding:10px 14px;letter-spacing:.03em}
+  td{padding:10px 14px;border-top:1px solid var(--line);vertical-align:top}
+  tr:nth-child(even) td{background:#FCFCFA}
+  td .mono, th .mono{font-size:12.5px}
+
+  /* email templates */
+  details.email{
+    background:var(--panel);border:1px solid var(--line);border-radius:8px;
+    margin:14px 0;overflow:hidden;
+  }
+  details.email summary{
+    cursor:pointer;padding:16px 20px;display:flex;align-items:center;gap:14px;
+    font-family:'IBM Plex Sans Condensed',sans-serif;font-weight:600;font-size:16.5px;
+    list-style:none;
+  }
+  details.email summary::-webkit-details-marker{display:none}
+  details.email summary::after{content:"+";margin-left:auto;font-family:'IBM Plex Mono',monospace;font-size:18px;color:var(--ink-soft)}
+  details.email[open] summary::after{content:"–"}
+  details.email[open] summary{border-bottom:1px solid var(--line)}
+  .email-body{padding:20px 24px 26px;max-width:82ch}
+  .email-body .subj{font-family:'IBM Plex Mono',monospace;font-size:13px;background:#F1F2EE;border:1px solid var(--line);border-radius:4px;padding:8px 12px;margin-bottom:16px}
+  .email-body p{margin:12px 0}
+  .email-body .madlib, .madlib{background:var(--mark);border-radius:2px;padding:0 3px;font-weight:500}
+  .email-body ol, .email-body ul{margin:10px 0 10px 22px}
+  .email-body li{margin:5px 0}
+  .signoff{margin-top:18px;font-weight:600}
+
+  .rule-note{font-size:14px;color:var(--ink-soft);font-style:italic;margin:10px 0 20px}
+
+  footer{border-top:1px solid var(--line);margin-top:60px;padding:26px 0 50px;color:var(--ink-soft);font-size:14px}
+  footer .mono{font-size:12px}
+
+  @media(max-width:760px){
+    .tick .name{display:none}
+    .runway{height:84px}
+    .email-body{padding:16px}
+  }
+  @media print{
+    nav.toc{display:none}
+    details.email{page-break-inside:avoid}
+    details.email summary::after{display:none}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="eyebrow">Command Plan · Software Engineering Organization</div>
+    <h1>Technical Director: First 90 Days</h1>
+    <p class="subtitle">Communications, structures, and the technical assessment track for converging <span class="madlib">[LEGACY ORGS]</span> into one mission-driven engineering organization.</p>
+    <div class="meta-row">
+      <div><span class="k">Role</span><span class="v">Technical Director, <span class="madlib">[ORG NAME]</span></span></div>
+      <div><span class="k">Start date</span><span class="v madlib">[DATE]</span></div>
+      <div><span class="k">Sign-off monicker</span><span class="v">Build well,</span></div>
+    </div>
+
+    <div class="timeline-block">
+      <div class="timeline-title">Comms Timeline · Day 1 to Day 90</div>
+      <div class="runway">
+        <div class="bar"><span class="seg1"></span><span class="seg2"></span><span class="seg3"></span></div>
+        <a class="tick" style="left:1%" href="#e1"><span class="name">Email 1: Introduction</span><span class="dot all"></span><span class="lbl">D1</span></a>
+        <a class="tick" style="left:3.5%" href="#s1"><span class="name">Staff kickoff invite</span><span class="dot staff"></span><span class="lbl">D2</span></a>
+        <a class="tick" style="left:10%" href="#e2"><span class="name">Email 2: Decisions</span><span class="dot all"></span><span class="lbl">D9</span></a>
+        <a class="tick" style="left:13%" href="#s2"><span class="name">Staff mechanics</span><span class="dot staff"></span><span class="lbl">D10</span></a>
+        <a class="tick" style="left:18%" href="#e3"><span class="name">Email 3: Excellence OS</span><span class="dot all"></span><span class="lbl">D16</span></a>
+        <a class="tick" style="left:25%" href="#e4"><span class="name">Email 4: Expectations</span><span class="dot all"></span><span class="lbl">D23</span></a>
+        <a class="tick" style="left:31%" href="#e5"><span class="name">Email 5: Work Ahead</span><span class="dot all"></span><span class="lbl">D28</span></a>
+        <a class="tick" style="left:39%" href="#e6"><span class="name">Email 6: What I Heard</span><span class="dot all"></span><span class="lbl">D35</span></a>
+        <a class="tick" style="left:50%" href="#e7"><span class="name">Email 7: Council Readout</span><span class="dot all"></span><span class="lbl">D45</span></a>
+        <a class="tick" style="left:78%" href="#e8"><span class="name">Email 8: Wins + Learnings</span><span class="dot all"></span><span class="lbl">D70</span></a>
+        <a class="tick" style="left:89%" href="#p3"><span class="name">90-day preview to Dir/Dep</span><span class="dot lead"></span><span class="lbl">D80</span></a>
+        <a class="tick" style="left:99%" href="#e9"><span class="name">Email 9: 90 Days In</span><span class="dot all"></span><span class="lbl">D90</span></a>
+      </div>
+      <div class="phase-labels"><div class="pl1">Phase 1 · Listen and Discover</div><div class="pl2">Phase 2 · Demonstrate and Define</div><div class="pl3">Phase 3 · Delegate and Drive</div></div>
+      <div class="legend">
+        <span><i style="background:var(--ink)"></i>All workforce</span>
+        <span><i style="background:var(--staff)"></i>Staff engineers only</span>
+        <span><i style="background:var(--lead)"></i>Director and Deputy only</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<nav class="toc">
+  <div class="wrap">
+    <a href="#arc">The Arc</a>
+    <a href="#p1">Phase 1 · Days 1-30</a>
+    <a href="#p2">Phase 2 · Days 31-60</a>
+    <a href="#p3">Phase 3 · Days 61-90</a>
+    <a href="#emails">Email Templates</a>
+    <a href="#cal">Comms Calendar</a>
+  </div>
+</nav>
+
+<main class="wrap">
+
+<!-- ================= ARC ================= -->
+<section id="arc">
+  <div class="sec-head"><span class="sec-num mono">00</span><h2>The Arc: One Effort, Three Phases</h2></div>
+  <p class="lede">Leading the organization and assessing the architecture are not two tracks. They are one effort: every conversation feeds the as-is picture, and the as-is picture gives every communication its substance.</p>
+  <table>
+    <tr><th>Phase</th><th>Days</th><th>Theme</th><th>Your job</th></tr>
+    <tr><td><strong style="color:var(--p1)">1</strong></td><td class="mono">1-30</td><td>Listen and Discover</td><td>Presence, alignment, series launch; build the as-is picture through the rounds</td></tr>
+    <tr><td><strong style="color:var(--p2)">2</strong></td><td class="mono">31-60</td><td>Demonstrate and Define</td><td>Structures visibly running; future state defined and the gap mapped</td></tr>
+    <tr><td><strong style="color:var(--p3)">3</strong></td><td class="mono">61-90</td><td>Delegate and Drive</td><td>Early wins as proof points; transition roadmap in execution</td></tr>
+  </table>
+
+  <div class="callout"><strong>The 90-day test:</strong> If you disappeared for two weeks at day 90, would the architecture council still meet, the reviews still happen, and the decisions still get logged?</div>
+
+  <div class="card">
+    <h4>Critical dependency chain</h4>
+    <ol style="margin:8px 0 4px 22px">
+      <li>Leadership alignment (Director/Deputy) <strong>before</strong> Email 2 goes out</li>
+      <li>Staff engineers briefed in person <strong>before</strong> the workforce reads the decision-rights email</li>
+      <li>Team rounds complete and as-is inventory built <strong>before</strong> Email 5 goes out</li>
+      <li>Director signed off on future state and sequencing <strong>before</strong> anything is announced</li>
+      <li>Director aligned on the story <strong>before</strong> the 90-day reflection email</li>
+    </ol>
+  </div>
+
+  <h4>Key artifacts and their consumers</h4>
+  <table>
+    <tr><th>Artifact</th><th>Due</th><th>Feeds</th></tr>
+    <tr><td>System inventory with dispositions</td><td class="mono">Day 30</td><td>Email 5 architectural changes list</td></tr>
+    <tr><td>As-is architecture baseline</td><td class="mono">Day 30</td><td>Gap analysis</td></tr>
+    <tr><td>Future state reference architecture v1</td><td class="mono">Day 50</td><td>Council ratification, Email 7</td></tr>
+    <tr><td>Gap analysis and sequencing</td><td class="mono">Day 55</td><td>Wave planning, Director sign-off</td></tr>
+    <tr><td>Transition roadmap with gates</td><td class="mono">Day 70</td><td>Wave 1 execution, Q2 roadmap</td></tr>
+    <tr><td>Progress metrics dashboard</td><td class="mono">Day 85</td><td>Email 9 scorecard, ongoing governance</td></tr>
+  </table>
+</section>
+
+<!-- ================= PHASE 1 ================= -->
+<section id="p1">
+  <div class="sec-head"><span class="sec-num mono">01</span><h2>Phase 1: Days 1-30<span class="phase-chip chip1">Listen and Discover</span></h2></div>
+
+  <h3>Week 1 · Presence and Listening</h3>
+  <div class="card accent1">
+    <h4>Comms out</h4>
+    <ul class="check">
+      <li><input type="checkbox" id="c1"><label for="c1"><span class="day-tag">D1</span>Email 1: Introduction and How We'll Lead</label></li>
+      <li><input type="checkbox" id="c2"><label for="c2"><span class="day-tag t-staff">D2-3</span>Staff engineers only: kickoff meeting invite</label></li>
+    </ul>
+    <h4>Establish</h4>
+    <ul class="check">
+      <li><input type="checkbox" id="c3"><label for="c3">Office hours on calendar, published and bookable</label></li>
+      <li><input type="checkbox" id="c4"><label for="c4">Team rounds schedule covering every team within 30 days</label></li>
+      <li><input type="checkbox" id="c5"><label for="c5">1:1 with Director: align on decision boundaries between the three of you</label></li>
+      <li><input type="checkbox" id="c6"><label for="c6">1:1 with Deputy Director: same alignment</label></li>
+      <li><input type="checkbox" id="c7"><label for="c7">1:1s with each senior/principal staff engineer (talent assessment, architecture council candidates, unfiltered state of legacy systems)</label></li>
+    </ul>
+  </div>
+  <p class="rule-note">Why this order: leadership alignment and staff conversations must happen before Email 2, so the decision-rights message reflects reality rather than aspiration.</p>
+
+  <h3>Week 2 · Decision Rights</h3>
+  <div class="card accent1">
+    <h4>Comms out</h4>
+    <ul class="check">
+      <li><input type="checkbox" id="c8"><label for="c8"><span class="day-tag">W2</span>Email 2: How We'll Make Technical Decisions</label></li>
+      <li><input type="checkbox" id="c9"><label for="c9"><span class="day-tag t-staff">W2</span>Staff-only follow-up: concrete decision mechanics</label></li>
+    </ul>
+    <h4>Establish</h4>
+    <ul class="check">
+      <li><input type="checkbox" id="c10"><label for="c10">Staff engineer kickoff meeting held (they hear the ownership model from you directly first)</label></li>
+      <li><input type="checkbox" id="c11"><label for="c11">Lightweight ADR (Architecture Decision Record) practice stood up</label></li>
+      <li><input type="checkbox" id="c12"><label for="c12">Initial inventory started: systems, duplicated capabilities, in-flight architectural decisions across legacy orgs</label></li>
+    </ul>
+  </div>
+
+  <h3>Week 3 · Culture and Standards</h3>
+  <div class="card accent1">
+    <h4>Comms out</h4>
+    <ul class="check">
+      <li><input type="checkbox" id="c13"><label for="c13"><span class="day-tag">W3</span>Email 3: Excellence as Our Operating System</label></li>
+      <li><input type="checkbox" id="c14"><label for="c14"><span class="day-tag">W3</span>Announcement of first recurring tech talk / engineering forum, with a date</label></li>
+    </ul>
+    <h4>Establish</h4>
+    <ul class="check">
+      <li><input type="checkbox" id="c15"><label for="c15">Architecture council named, charter drafted (membership from week 1 assessments)</label></li>
+      <li><input type="checkbox" id="c16"><label for="c16">Design review cadence defined: triggers, attendees, what good looks like</label></li>
+      <li><input type="checkbox" id="c17"><label for="c17">First tech talk scheduled (ideally you, on a convergence-related topic)</label></li>
+    </ul>
+  </div>
+
+  <h3>Week 4 · Expectations and Direction</h3>
+  <div class="card accent1">
+    <h4>Comms out</h4>
+    <ul class="check">
+      <li><input type="checkbox" id="c18"><label for="c18"><span class="day-tag">W4 early</span>Email 4: My Expectations of All of You</label></li>
+      <li><input type="checkbox" id="c19"><label for="c19"><span class="day-tag">W4 late</span>Email 5: The Technical Work Ahead</label></li>
+    </ul>
+    <h4>Establish</h4>
+    <ul class="check">
+      <li><input type="checkbox" id="c20"><label for="c20">AI-assisted engineering guidance drafted: approved tools, review expectations, learning investment</label></li>
+      <li><input type="checkbox" id="c21"><label for="c21">Convergence assessment complete enough to name top 3-4 architectural changes with specifics</label></li>
+      <li><input type="checkbox" id="c22"><label for="c22">30-60-90 technical roadmap socialized with Director before Email 5 goes out</label></li>
+      <li><input type="checkbox" id="c23"><label for="c23">Feedback loop opened: channel, survey, or standing office-hours theme</label></li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h4>Running throughout Phase 1</h4>
+    <ul class="check">
+      <li><input type="checkbox" id="c24"><label for="c24">Team rounds: 2-3 teams per week, every team touched by day 30</label></li>
+      <li><input type="checkbox" id="c25"><label for="c25">Weekly sync with Director and Deputy (no email surprises them)</label></li>
+      <li><input type="checkbox" id="c26"><label for="c26">Notes from every round feeding the convergence inventory</label></li>
+    </ul>
+  </div>
+
+  <h3>Discover · Build the as-is picture</h3>
+  <p>The team rounds are the assessment vehicle. Every round conversation feeds the inventory, so listening and discovery are the same activity.</p>
+  <div class="card accent1">
+    <h4>Assessment dimensions (collect for every legacy org)</h4>
+    <ul class="check">
+      <li><input type="checkbox" id="a1"><label for="a1"><strong>Capability and system inventory:</strong> every system, its owner, its users, tech stack, hosting environment, lifecycle stage</label></li>
+      <li><input type="checkbox" id="a2"><label for="a2"><strong>Architecture baseline:</strong> as-built diagrams (or reconstruct them where they don't exist), integration map, data flows between systems</label></li>
+      <li><input type="checkbox" id="a3"><label for="a3"><strong>Delivery health:</strong> pipeline maturity, deployment frequency, test coverage, incident and outage history</label></li>
+      <li><input type="checkbox" id="a4"><label for="a4"><strong>Data landscape:</strong> authoritative sources, duplicated data stores, schema divergence across orgs</label></li>
+      <li><input type="checkbox" id="a5"><label for="a5"><strong>Security and compliance posture:</strong> ATO status, known risk acceptances, expiring accreditations</label></li>
+      <li><input type="checkbox" id="a6"><label for="a6"><strong>People and skills map:</strong> who knows what, single points of failure, skills gaps vs future needs</label></li>
+      <li><input type="checkbox" id="a7"><label for="a7"><strong>Contract and acquisition map:</strong> which contracts fund which systems, periods of performance, constraints on convergence timing</label></li>
+      <li><input type="checkbox" id="a8"><label for="a8"><strong>User outcome baseline:</strong> who actually uses each capability, how satisfied they are, mission fit</label></li>
+      <li><input type="checkbox" id="a9"><label for="a9"><strong>In-flight work register:</strong> every active architectural decision or major build; decide pause vs proceed for each</label></li>
+    </ul>
+  </div>
+
+  <h4>Disposition scoring (apply to every system)</h4>
+  <p>Score each system on a simple rubric so the convergence conversation is evidence-based rather than political:</p>
+  <table>
+    <tr><th>Disposition</th><th>Meaning</th><th>Criteria</th></tr>
+    <tr><td><strong>Invest</strong></td><td>Future state building block</td><td>Strong mission fit, healthy delivery, modern stack</td></tr>
+    <tr><td><strong>Sustain</strong></td><td>Keep running, minimal new investment</td><td>Mission-necessary, stable, not strategic</td></tr>
+    <tr><td><strong>Converge</strong></td><td>Merge into a common capability</td><td>Duplicates another system's function</td></tr>
+    <tr><td><strong>Sunset</strong></td><td>Plan retirement</td><td>Weak mission fit, high cost, or superseded</td></tr>
+  </table>
+  <ul class="check">
+    <li><input type="checkbox" id="a10"><label for="a10">Every inventoried system has a preliminary disposition by day 30</label></li>
+    <li><input type="checkbox" id="a11"><label for="a11">Contested dispositions flagged for architecture council review</label></li>
+  </ul>
+</section>
+
+<!-- ================= PHASE 2 ================= -->
+<section id="p2">
+  <div class="sec-head"><span class="sec-num mono">02</span><h2>Phase 2: Days 31-60<span class="phase-chip chip2">Demonstrate and Define</span></h2></div>
+  <p class="lede">The structures you announced start visibly running, and the as-is picture becomes a defined future state with a mapped gap. Credibility in this window comes from follow-through, not new announcements.</p>
+
+  <div class="card accent2">
+    <h4>Comms out</h4>
+    <ul class="check">
+      <li><input type="checkbox" id="c27"><label for="c27"><span class="day-tag">D~35</span>"What I Heard" email. Highest-leverage email of the quarter; proves the listening was real.</label></li>
+      <li><input type="checkbox" id="c28"><label for="c28"><span class="day-tag">D~45</span>First architecture council readout</label></li>
+      <li><input type="checkbox" id="c29"><label for="c29"><span class="day-tag">Ongoing</span>Tech talk series running biweekly, rotating speakers beyond you</label></li>
+    </ul>
+    <h4>Establish by Day 60</h4>
+    <ul class="check">
+      <li><input type="checkbox" id="c30"><label for="c30">Architecture council operating: 2-3 real decisions through the process, ADRs published</label></li>
+      <li><input type="checkbox" id="c31"><label for="c31">Design reviews happening on in-flight work, with at least one visible example of a review changing an outcome</label></li>
+      <li><input type="checkbox" id="c32"><label for="c32">Engineering standards v1 published (drafted with staff engineer input, not decree)</label></li>
+      <li><input type="checkbox" id="c33"><label for="c33">AI-assisted engineering program launched: tools available, first training held, champions identified</label></li>
+      <li><input type="checkbox" id="c34"><label for="c34">Convergence roadmap baselined: 3-4 changes with owners, sequencing, success measures</label></li>
+      <li><input type="checkbox" id="c35"><label for="c35">First duplicated-capability convergence decision made (small is fine; the point is the process works)</label></li>
+      <li><input type="checkbox" id="c36"><label for="c36">Talent map complete: top performers, flight risks, growth candidates</label></li>
+      <li><input type="checkbox" id="c37"><label for="c37">Contractor leadership engaged: sit-down with contractor PMs/leads on the decision-rights model</label></li>
+    </ul>
+  </div>
+  <h3>Define · Future state and the gap</h3>
+  <div class="card accent2">
+    <ul class="check">
+      <li><input type="checkbox" id="a12"><label for="a12"><strong>Future state reference architecture v1:</strong> target platform layers, shared services, integration patterns, and the engineering principles that govern it. Drafted with senior/principal staff engineers, ratified by the architecture council.</label></li>
+      <li><input type="checkbox" id="a13"><label for="a13"><strong>Gap analysis per capability:</strong> as-is vs future state, effort estimate, risk, and dependencies for each move</label></li>
+      <li><input type="checkbox" id="a14"><label for="a14"><strong>Disposition decisions ratified:</strong> contested calls through the architecture council, each with an ADR (these become Email 7 content)</label></li>
+      <li><input type="checkbox" id="a15"><label for="a15"><strong>Sequencing model agreed:</strong> rank the moves by mission impact, risk, contract timing, and quick-win potential. The first convergence decision comes from the top of this list.</label></li>
+      <li><input type="checkbox" id="a16"><label for="a16"><strong>Validation loop with users:</strong> future state walked through with representative users before it's final; their workflows are the test</label></li>
+      <li><input type="checkbox" id="a17"><label for="a17"><strong>Director sign-off:</strong> future state and sequencing reviewed against mission objectives and charging guidance before anything is announced</label></li>
+    </ul>
+  </div>
+  <div class="callout"><strong>Watch for:</strong> passive resistance surfaces here. Teams nodding in week 2 will quietly route around the architecture council by week 6. Catch one instance and correct it visibly but gracefully.</div>
+</section>
+
+<!-- ================= PHASE 3 ================= -->
+<section id="p3">
+  <div class="sec-head"><span class="sec-num mono">03</span><h2>Phase 3: Days 61-90<span class="phase-chip chip3">Delegate and Drive</span></h2></div>
+  <p class="lede">Early wins become proof points, the transition roadmap goes into execution, and the organization starts running the operating system without you pushing every cycle.</p>
+
+  <div class="card accent3">
+    <h4>Comms out</h4>
+    <ul class="check">
+      <li><input type="checkbox" id="c38"><label for="c38"><span class="day-tag">D~70</span>First "Wins and Learnings" email. Name people. Recognize the behavior you want repeated.</label></li>
+      <li><input type="checkbox" id="c39"><label for="c39"><span class="day-tag t-lead">D~80</span>90-day reflection preview to Director and Deputy (align on the story first)</label></li>
+      <li><input type="checkbox" id="c40"><label for="c40"><span class="day-tag">D~90</span>"90 Days In" email to workforce. Honest scorecard; models the retrospective culture.</label></li>
+    </ul>
+    <h4>Establish by Day 90</h4>
+    <ul class="check">
+      <li><input type="checkbox" id="c41"><label for="c41">First converged capability delivered or demonstrably in flight, with a user-facing outcome</label></li>
+      <li><input type="checkbox" id="c42"><label for="c42">User engagement mechanism real: users in design reviews or a standing user council</label></li>
+      <li><input type="checkbox" id="c43"><label for="c43">Metrics baseline published: delivery cadence, review coverage, defect trends, user satisfaction</label></li>
+      <li><input type="checkbox" id="c44"><label for="c44">Staff engineer growth paths drafted: IC to senior to principal, what advancing looks like here</label></li>
+      <li><input type="checkbox" id="c45"><label for="c45">AI fluency spreading: measurable adoption, shared prompt/pattern library started, champions teaching others</label></li>
+      <li><input type="checkbox" id="c46"><label for="c46">Quarter 2 technical roadmap socialized and approved with Director</label></li>
+      <li><input type="checkbox" id="c47"><label for="c47">Succession of energy: at least one initiative owned and driven by someone other than you</label></li>
+    </ul>
+  </div>
+
+  <h3>Drive · Roadmap and first moves</h3>
+  <div class="card accent3">
+    <ul class="check">
+      <li><input type="checkbox" id="a18"><label for="a18"><strong>Transition roadmap published internally:</strong> waves of work with entry/exit criteria and go/no-go gates between waves</label></li>
+      <li><input type="checkbox" id="a19"><label for="a19"><strong>Wave 1 in execution:</strong> the first convergence effort staffed, funded, and moving (this is the "converged capability in flight" item above)</label></li>
+      <li><input type="checkbox" id="a20"><label for="a20"><strong>Drift controls in place:</strong> all new work checked against the future state via design reviews; exceptions require an ADR</label></li>
+      <li><input type="checkbox" id="a21"><label for="a21"><strong>Progress metrics live:</strong> convergence count, systems by disposition, sunset progress, alongside the delivery and user metrics baseline</label></li>
+      <li><input type="checkbox" id="a22"><label for="a22"><strong>Refresh rhythm set:</strong> future state is a living document; quarterly review by the architecture council so it evolves with the mission</label></li>
+    </ul>
+  </div>
+</section>
+
+<!-- ================= EMAILS ================= -->
+<section id="emails">
+  <div class="sec-head"><span class="sec-num mono">04</span><h2>Email Templates</h2></div>
+  <p class="rule-note">All emails sign off: <strong>Build well,</strong> / [NAME] / Technical Director, [ORG NAME]. Series rule: every email readable in two minutes or less. Highlighted text marks mad-lib fills.</p>
+
+  <details class="email" id="e1" open>
+    <summary><span class="day-tag">D1</span>Email 1 · Introduction and How We'll Lead</summary>
+    <div class="email-body">
+      <div class="subj">Subject: Introducing Your Technical Director</div>
+      <p>Team <span class="madlib">[ORG NAME]</span>,</p>
+      <p>As we bring together the best of <span class="madlib">[LEGACY ORG 1]</span>, <span class="madlib">[LEGACY ORG 2]</span>, and <span class="madlib">[LEGACY ORG 3]</span> into a single organization, I want to introduce myself and explain how our senior leadership team will work. Some of you I've worked alongside for years. For others, this is our first engagement, and I'm looking forward to changing that quickly.</p>
+      <p><strong>Who I am.</strong> I've spent <span class="madlib">[X years]</span> building and leading software engineering organizations, most recently as <span class="madlib">[PRIOR ROLE]</span> for <span class="madlib">[PRIOR ORG]</span>, where I <span class="madlib">[KEY ACCOMPLISHMENT]</span>. Before that, <span class="madlib">[1-2 SENTENCE CAREER ARC]</span>. Outside of work, <span class="madlib">[OPTIONAL PERSONAL NOTE]</span>. I share this not as a resume but so you know the lens I bring: I care deeply about the craft of software engineering, the humans who practice it, and the users who depend on what we build.</p>
+      <p><strong>How we'll lead.</strong> The Director, <span class="madlib">[DIRECTOR NAME]</span>, owns the mission, the resources, and the outcomes of this organization. The Deputy Director, <span class="madlib">[DEPUTY NAME]</span>, owns the operations that keep us running. My job as Technical Director is to translate the mission <span class="madlib">[DIRECTOR NAME]</span> sets into a technical strategy that achieves it, and to build the engineering health that makes execution possible: the architecture, the standards, and the growth of our technical workforce.</p>
+      <p>Let me be clear about what that means. Technology is not the point; the mission is. Every architectural decision, every platform investment, and every standard we adopt has to earn its place by moving us toward the objectives the Director has laid out. There will be no tech for tech's sake in this office. If I can't draw a straight line from a technical choice to the mission, we don't make that choice.</p>
+      <p>Think of it as a three-legged stool. Mission, operations, and technology each need a dedicated senior leader, and none of us succeeds without the other two.</p>
+      <p><strong>What you can expect from me.</strong> I will be visible, accessible, and honest. My calendar has open office hours starting <span class="madlib">[DATE]</span>, and I'll be making rounds to every team over the next <span class="madlib">[TIMEFRAME]</span>. Bring me your hardest technical problems, your skepticism, and your ideas.</p>
+      <p>Over the next few weeks I'll share how we'll make technical decisions, the standard we'll hold ourselves to, my expectations of each of us, and where we're headed. Each one will be short. Each one matters.</p>
+      <p>I'm genuinely excited about what we're going to build together.</p>
+      <p class="signoff">Build well,<br><span class="madlib">[NAME]</span><br>Technical Director, <span class="madlib">[ORG NAME]</span></p>
+    </div>
+  </details>
+
+  <details class="email" id="s1">
+    <summary><span class="day-tag t-staff">D2-3</span>Staff-Only Note · Kickoff Meeting Invite</summary>
+    <div class="email-body">
+      <div class="subj">Subject: Staff Engineers: Kickoff with the TD, [DATE/TIME]</div>
+      <p>Team,</p>
+      <p>Before I say anything to the broader workforce about how technical decisions will work in this organization, I want to talk with you first, because you're at the center of it.</p>
+      <p>I'm holding a staff engineer kickoff on <span class="madlib">[DATE]</span> at <span class="madlib">[TIME]</span> in <span class="madlib">[LOCATION/LINK]</span>. We'll cover the decision ownership model, what I'll be asking of you, what you can count on from me, and whatever is on your minds about the convergence. Come with your honest read on the state of your systems. I want the unfiltered version.</p>
+      <p>If you can't make this session, grab time on my calendar this week. This conversation happens with every one of you either way.</p>
+      <p class="signoff">Build well,<br><span class="madlib">[NAME]</span></p>
+    </div>
+  </details>
+
+  <details class="email" id="e2">
+    <summary><span class="day-tag">W2</span>Email 2 · How We'll Make Technical Decisions</summary>
+    <div class="email-body">
+      <div class="subj">Subject: How We'll Make Technical Decisions</div>
+      <p>Team <span class="madlib">[ORG NAME]</span>,</p>
+      <p>As promised, here's the second note in this series. This one covers a foundational question for any engineering organization: who makes the technical calls?</p>
+      <p>One of my first priorities is establishing clear technical decision-making, because ambiguity here is where quality and delivery go to die.</p>
+      <p>Here's how it will work: our government staff engineers, from individual contributors through senior and principal engineers, together with me, hold the decision authority for the architecture and technical direction of this organization. Staff engineers make the architectural calls, and staff engineers answer for them. That accountability comes with the territory of government service, and we own it fully.</p>
+      <p>Our contractor teammates are essential to that process. Your expertise, your hands-on knowledge of these systems, and your candid technical input make our decisions better, and I expect staff to actively seek out that input before making calls. But to be clear: informing a decision and making a decision are different things, and the making rests with staff. What that clarity gives all of us, staff and contractor alike, is the ability to move fast once a decision is made, knowing exactly who made it and why.</p>
+      <p>You'll see this in practice soon: we're standing up <span class="madlib">[ARCHITECTURE COUNCIL / DECISION RECORD PRACTICE]</span>, so decisions and their rationale will be visible to everyone.</p>
+      <p>Next up in this series: the standard we'll hold ourselves to.</p>
+      <p class="signoff">Build well,<br><span class="madlib">[NAME]</span><br>Technical Director, <span class="madlib">[ORG NAME]</span></p>
+    </div>
+  </details>
+
+  <details class="email" id="s2">
+    <summary><span class="day-tag t-staff">W2</span>Staff-Only Follow-Up · Decision Mechanics</summary>
+    <div class="email-body">
+      <div class="subj">Subject: Decision Rights: The Mechanics</div>
+      <p>Staff engineers,</p>
+      <p>The workforce email today described the model. Here's the operational detail for you.</p>
+      <p><strong>What you own outright:</strong> <span class="madlib">[e.g., component-level design, technology selection within approved standards, implementation approach, code review authority]</span></p>
+      <p><strong>What comes to the architecture council:</strong> <span class="madlib">[e.g., cross-team interfaces, new platform or service introductions, deviations from standards, anything with acquisition implications]</span></p>
+      <p><strong>What escalates to me:</strong> <span class="madlib">[e.g., unresolved cross-portfolio disputes, decisions with significant mission or budget risk, exceptions to charging guidance]</span></p>
+      <p><strong>Recording decisions:</strong> Every significant call gets an ADR in <span class="madlib">[LOCATION/TOOL]</span>. Short is fine. The rationale matters more than the format.</p>
+      <p><strong>On contractor pushback:</strong> When a contractor disagrees with your call, hear them out fully, and if their argument is better, change your mind; that's strength, not weakness. If you still disagree, the decision stands and you own it. If it gets uncomfortable, bring it to me and I'll back you or coach you, and either way you won't be alone in it.</p>
+      <p>Questions come to me directly or to office hours.</p>
+      <p class="signoff">Build well,<br><span class="madlib">[NAME]</span></p>
+    </div>
+  </details>
+
+  <details class="email" id="e3">
+    <summary><span class="day-tag">W3</span>Email 3 · Excellence as Our Operating System</summary>
+    <div class="email-body">
+      <div class="subj">Subject: Excellence as Our Operating System</div>
+      <p>Team <span class="madlib">[ORG NAME]</span>,</p>
+      <p>Third note in the series. This one is about the standard we hold ourselves to.</p>
+      <p>Elizabeth Stone, Netflix's CTO, has described excellence at Netflix not as an aspiration or a poster on the wall, but as an operating system: the way the company actually runs, day in and day out. That is the standard I'm adopting for this office.</p>
+      <p>Technical excellence will be how we operate, not something we hope emerges. That means we treat software engineering as both an art and a science, and we build with care and intent. Every system we design, every interface we ship, and every line of code we write is a deliberate choice, and I expect us to make those choices thoughtfully rather than by default or convenience.</p>
+      <p>It also means we are honest about who we build for. It is not us. The most dangerous trap in software engineering is building for ourselves as developers: optimizing for what is elegant to us, familiar to us, or interesting to us, rather than what actually serves the people doing the mission. We will build for our end users, and just as importantly, with them. That means users in the room early and often, requirements grounded in their real workflows, and success measured by whether they can do their jobs better because of what we built, not by whether our architecture diagrams are beautiful.</p>
+      <p>An operating system is only as good as the processes running on it, so we will back these principles with concrete practice: rigorous design reviews, honest retrospectives, high standards for what we ship, and a culture where the best technical argument wins regardless of who makes it. First up: our engineering tech talk series kicks off <span class="madlib">[DATE]</span> with <span class="madlib">[TOPIC/SPEAKER]</span>. More practices follow in the coming weeks, including <span class="madlib">[ARCHITECTURE REVIEW BOARD / STANDARDS / REVIEW CADENCE]</span>.</p>
+      <p>Next in the series: what I expect of every one of us.</p>
+      <p class="signoff">Build well,<br><span class="madlib">[NAME]</span><br>Technical Director, <span class="madlib">[ORG NAME]</span></p>
+    </div>
+  </details>
+
+  <details class="email" id="e4">
+    <summary><span class="day-tag">W4</span>Email 4 · My Expectations of All of You</summary>
+    <div class="email-body">
+      <div class="subj">Subject: My Expectations of All of You</div>
+      <p>Team <span class="madlib">[ORG NAME]</span>,</p>
+      <p>Excellence as an operating system only works if every one of us runs it. Staff or contractor, junior or principal, here is what I expect:</p>
+      <p><strong>Hone your craft, relentlessly.</strong> Software engineering is a discipline that punishes standing still. I expect you to read, experiment, take courses, attend the tech talks, and treat your own growth as part of the job rather than something you do if there's time left over. The engineer you are today should not be the engineer you are a year from now.</p>
+      <p><strong>Master AI-assisted engineering.</strong> AI assistants are now part of the craft, not a shortcut around it. I expect you to learn these tools deeply: when to lean on them, when to distrust them, and how to review their output with the same rigor you'd apply to any teammate's code. Using them well is a skill; using them blindly is a liability. We will invest in helping you build that fluency, starting with <span class="madlib">[TRAINING/TOOLING PLAN]</span>.</p>
+      <p><strong>Know your users.</strong> Deep technical skill aimed at the wrong problem is wasted effort. I expect you to understand the mission your software serves and the people who depend on it, well enough to push back when a requirement doesn't match reality on the ground.</p>
+      <p><strong>Communicate like it matters, because it does.</strong> Write clearly. Document your decisions. Explain your architecture to someone outside your team. The best technical work in the world dies in obscurity if you can't make the case for it.</p>
+      <p><strong>Disagree openly, commit fully.</strong> I expect candor in the room and alignment when we leave it. Challenge ideas hard, including mine. But once a decision is made, we execute as one team.</p>
+      <p><strong>Lift others as you climb.</strong> Mentor someone. Review code generously. Share what you learn. Organizations get strong when knowledge flows freely, and I will notice the people who make others better.</p>
+      <p>One more note in this series, and it's the big one: where we're headed technically.</p>
+      <p class="signoff">Build well,<br><span class="madlib">[NAME]</span><br>Technical Director, <span class="madlib">[ORG NAME]</span></p>
+    </div>
+  </details>
+
+  <details class="email" id="e5">
+    <summary><span class="day-tag">W4-5</span>Email 5 · The Technical Work Ahead</summary>
+    <div class="email-body">
+      <div class="subj">Subject: The Technical Work Ahead</div>
+      <p>Team <span class="madlib">[ORG NAME]</span>,</p>
+      <p>Final note in this series, and the one everything else has been building toward.</p>
+      <p>Over the past month I've met with <span class="madlib">[NUMBER]</span> teams, held <span class="madlib">[NUMBER]</span> office hours, and heard from many of you directly. That input shaped what follows. Convergence is not just organizational. Our mission objectives and charging guidance require real architectural change, and I won't pretend otherwise. In broad strokes, we must:</p>
+      <ol>
+        <li><span class="madlib">[ARCHITECTURAL CHANGE 1, e.g., converge duplicated capabilities into common enterprise services]</span></li>
+        <li><span class="madlib">[ARCHITECTURAL CHANGE 2, e.g., modernize legacy systems that no longer serve the mission]</span></li>
+        <li><span class="madlib">[ARCHITECTURAL CHANGE 3, e.g., establish shared platforms, data standards, and interoperability]</span></li>
+        <li><span class="madlib">[ARCHITECTURAL CHANGE 4, e.g., build the AI/automation foundation the mission demands]</span></li>
+      </ol>
+      <p>Each of these will get its own deep dive, with your input. Some of this work will be uncomfortable. Convergence means letting go of systems and patterns we're attached to. But as I said on day one, there is no tech for tech's sake here. Every change on this list traces a straight line to the mission the Director has set, and I will always show my work on why.</p>
+      <p>Here's what happens next: <span class="madlib">[FIRST CONCRETE STEP, e.g., the architecture council takes up the first convergence decision on DATE; capability inventory review sessions begin WEEK]</span>.</p>
+      <p>Thank you for how you've engaged this first month. Now we build.</p>
+      <p class="signoff">Build well,<br><span class="madlib">[NAME]</span><br>Technical Director, <span class="madlib">[ORG NAME]</span></p>
+    </div>
+  </details>
+
+  <details class="email" id="e6">
+    <summary><span class="day-tag">D~35</span>Email 6 · What I Heard</summary>
+    <div class="email-body">
+      <div class="subj">Subject: What I Heard From You</div>
+      <p>Team <span class="madlib">[ORG NAME]</span>,</p>
+      <p>Over my first month I visited every team, held <span class="madlib">[NUMBER]</span> office hours, and had more hallway conversations than I can count. You were candid, and I'm grateful. Here's what I heard, and what's changing because of it.</p>
+      <p><strong>What you told me:</strong></p>
+      <ul>
+        <li><span class="madlib">[THEME 1, e.g., duplicated tooling across legacy orgs slows everyone down]</span></li>
+        <li><span class="madlib">[THEME 2, e.g., unclear requirements churn is the top frustration]</span></li>
+        <li><span class="madlib">[THEME 3, e.g., talented engineers feel siloed from users]</span></li>
+        <li><span class="madlib">[SURPRISE/HONORABLE MENTION, e.g., more appetite for AI tooling than expected]</span></li>
+      </ul>
+      <p><strong>What's changing because of it:</strong></p>
+      <ul>
+        <li><span class="madlib">[ACTION 1 tied to THEME 1]</span></li>
+        <li><span class="madlib">[ACTION 2 tied to THEME 2]</span></li>
+        <li><span class="madlib">[ACTION 3 tied to THEME 3]</span></li>
+      </ul>
+      <p><strong>What I heard but can't change yet, and why:</strong></p>
+      <ul>
+        <li><span class="madlib">[ITEM + HONEST REASON. Do not skip this section; it's where credibility lives.]</span></li>
+      </ul>
+      <p>Keep it coming. Office hours are standing, and <span class="madlib">[FEEDBACK CHANNEL]</span> is always open.</p>
+      <p class="signoff">Build well,<br><span class="madlib">[NAME]</span><br>Technical Director, <span class="madlib">[ORG NAME]</span></p>
+    </div>
+  </details>
+
+  <details class="email" id="e7">
+    <summary><span class="day-tag">D~45</span>Email 7 · Architecture Council Readout #1</summary>
+    <div class="email-body">
+      <div class="subj">Subject: Architecture Council: Decisions and Rationale</div>
+      <p>Team <span class="madlib">[ORG NAME]</span>,</p>
+      <p>As promised, decisions made in this organization will be visible along with the reasoning behind them. Here's the first readout from the architecture council.</p>
+      <p><strong>Decisions made:</strong></p>
+      <ol>
+        <li><strong><span class="madlib">[DECISION 1]</span>:</strong> <span class="madlib">[One-sentence rationale.]</span> Full ADR: <span class="madlib">[LINK]</span></li>
+        <li><strong><span class="madlib">[DECISION 2]</span>:</strong> <span class="madlib">[One-sentence rationale.]</span> Full ADR: <span class="madlib">[LINK]</span></li>
+      </ol>
+      <p><strong>Under consideration:</strong></p>
+      <ul>
+        <li><span class="madlib">[TOPIC IN FLIGHT, and how to weigh in: LINK/CONTACT]</span></li>
+      </ul>
+      <p><strong>How to bring something to the council:</strong> <span class="madlib">[SUBMISSION PROCESS]</span></p>
+      <p>These readouts will come after every council session. Short, factual, always with the why.</p>
+      <p class="signoff">Build well,<br><span class="madlib">[NAME]</span><br>Technical Director, <span class="madlib">[ORG NAME]</span></p>
+    </div>
+  </details>
+
+  <details class="email" id="e8">
+    <summary><span class="day-tag">D~70</span>Email 8 · Wins and Learnings</summary>
+    <div class="email-body">
+      <div class="subj">Subject: Wins and Learnings</div>
+      <p>Team <span class="madlib">[ORG NAME]</span>,</p>
+      <p>Two months in, and the operating system is running. Some proof, and some honesty:</p>
+      <p><strong>Wins worth naming:</strong></p>
+      <ul>
+        <li><strong><span class="madlib">[WIN 1, e.g., first converged capability]</span>:</strong> <span class="madlib">[WHAT + USER OUTCOME]</span>. Credit to <span class="madlib">[NAMES]</span>.</li>
+        <li><strong><span class="madlib">[WIN 2, e.g., a design review that caught a costly issue early]</span>:</strong> <span class="madlib">[WHAT HAPPENED]</span>. Credit to <span class="madlib">[NAMES]</span>.</li>
+        <li><strong><span class="madlib">[WIN 3, e.g., AI-assisted engineering adoption milestone]</span>:</strong> <span class="madlib">[METRIC]</span>. Credit to <span class="madlib">[NAMES/CHAMPIONS]</span>.</li>
+      </ul>
+      <p><strong>Learnings worth admitting:</strong></p>
+      <ul>
+        <li><span class="madlib">[SOMETHING THAT DIDN'T WORK + WHAT WE CHANGED. Model the retrospective culture.]</span></li>
+      </ul>
+      <p>If you see work that deserves this kind of recognition, tell me. I want to be flooded with candidates.</p>
+      <p class="signoff">Build well,<br><span class="madlib">[NAME]</span><br>Technical Director, <span class="madlib">[ORG NAME]</span></p>
+    </div>
+  </details>
+
+  <details class="email" id="e9">
+    <summary><span class="day-tag">D~90</span>Email 9 · 90 Days In</summary>
+    <div class="email-body">
+      <div class="subj">Subject: 90 Days In: An Honest Scorecard</div>
+      <p>Team <span class="madlib">[ORG NAME]</span>,</p>
+      <p>Ninety days ago I told you technical excellence would be our operating system, staff engineers would own the architecture, and we would build for and with our users. Here's my honest self-assessment of where we stand.</p>
+      <p><strong>Working:</strong></p>
+      <ul>
+        <li><span class="madlib">[ITEM + EVIDENCE/METRIC]</span></li>
+        <li><span class="madlib">[ITEM + EVIDENCE/METRIC]</span></li>
+        <li><span class="madlib">[ITEM + EVIDENCE/METRIC]</span></li>
+      </ul>
+      <p><strong>Not yet working:</strong></p>
+      <ul>
+        <li><span class="madlib">[ITEM + WHAT WE'RE CHANGING]</span></li>
+        <li><span class="madlib">[ITEM + WHAT WE'RE CHANGING]</span></li>
+      </ul>
+      <p><strong>By the numbers:</strong> <span class="madlib">[BASELINE METRICS: delivery cadence, review coverage, defect trends, user satisfaction. These are our starting lines; we'll track them openly from here.]</span></p>
+      <p><strong>Next quarter:</strong> <span class="madlib">[TOP 2-3 PRIORITIES, e.g., convergence effort #2, standards v2, user council expansion]</span></p>
+      <p>Thank you for these first 90 days. You've engaged with candor, challenged me when I needed it, and delivered. The next quarter we go faster.</p>
+      <p class="signoff">Build well,<br><span class="madlib">[NAME]</span><br>Technical Director, <span class="madlib">[ORG NAME]</span></p>
+    </div>
+  </details>
+</section>
+
+<!-- ================= CALENDAR ================= -->
+<section id="cal">
+  <div class="sec-head"><span class="sec-num mono">05</span><h2>Quick-Reference Comms Calendar</h2></div>
+  <table>
+    <tr><th>Day</th><th>Communication</th><th>Audience</th></tr>
+    <tr><td class="mono">1</td><td>Email 1: Introduction and How We'll Lead</td><td>All workforce</td></tr>
+    <tr><td class="mono">2-3</td><td>Kickoff meeting invite</td><td>Staff engineers only</td></tr>
+    <tr><td class="mono">~8-10</td><td>Email 2: How We'll Make Technical Decisions</td><td>All workforce</td></tr>
+    <tr><td class="mono">~8-10</td><td>Decision mechanics follow-up</td><td>Staff engineers only</td></tr>
+    <tr><td class="mono">~15-17</td><td>Email 3: Excellence as Our Operating System</td><td>All workforce</td></tr>
+    <tr><td class="mono">~15-17</td><td>Tech talk series announcement</td><td>All workforce</td></tr>
+    <tr><td class="mono">~22-24</td><td>Email 4: My Expectations of All of You</td><td>All workforce</td></tr>
+    <tr><td class="mono">~26-30</td><td>Email 5: The Technical Work Ahead</td><td>All workforce</td></tr>
+    <tr><td class="mono">~35</td><td>Email 6: What I Heard</td><td>All workforce</td></tr>
+    <tr><td class="mono">~45</td><td>Email 7: Architecture Council Readout #1</td><td>All workforce</td></tr>
+    <tr><td class="mono">~70</td><td>Email 8: Wins and Learnings</td><td>All workforce</td></tr>
+    <tr><td class="mono">~80</td><td>90-day reflection preview</td><td>Director and Deputy only</td></tr>
+    <tr><td class="mono">~90</td><td>Email 9: 90 Days In</td><td>All workforce</td></tr>
+  </table>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <span class="mono">TD FIRST 90 · Listen+Discover / Demonstrate+Define / Delegate+Drive</span><br>
+    Checkboxes track within this session; print or save as PDF to capture a snapshot. Highlighted text marks mad-lib fills.
+  </div>
+</footer>
+
+</body>
+</html>
