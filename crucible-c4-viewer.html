@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Crucible · C4 Diagrams</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0F151B; --surface:#151D25; --line:#28353F;
+    --text:#E7EEF4; --text-dim:#93A2AF; --text-mute:#647380;
+    --accent:#6D8DFF;
+  }
+  body{margin:0; background:var(--bg); color:var(--text); font-family:'IBM Plex Sans',sans-serif; font-size:17px; line-height:1.65;}
+  .wrap{max-width:1180px; margin:0 auto; padding:0 28px;}
+  header{padding:64px 0 40px; border-bottom:1px solid var(--line);}
+  .eyebrow{font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:.22em; text-transform:uppercase; color:var(--accent);}
+  h1{font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:clamp(30px,5vw,48px); margin:14px 0 0; letter-spacing:-.02em;}
+  header p{color:var(--text-dim); max-width:60ch; margin:16px 0 0;}
+  section{padding:54px 0; border-bottom:1px solid var(--line);}
+  .sec-head{display:flex; align-items:baseline; gap:14px; flex-wrap:wrap;}
+  .sec-head .n{font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--text-mute); letter-spacing:.14em;}
+  h2{font-family:'Space Grotesk',sans-serif; font-size:clamp(22px,3vw,28px); margin:0;}
+  section > .wrap > p{color:var(--text-dim); max-width:70ch; margin:12px 0 0; font-size:15.5px;}
+  .frame{background:#0B1015; border:1px solid var(--line); border-radius:16px; padding:22px; margin-top:26px; overflow-x:auto;}
+  .mermaid{display:flex; justify-content:center;}
+  footer{padding:36px 0 56px;}
+  footer p{color:var(--text-mute); font-family:'IBM Plex Mono',monospace; font-size:13.5px; margin:0;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="eyebrow">Architecture · diagrams as code</div>
+    <h1>Crucible · C4 Diagrams</h1>
+    <p>Rendered from the Mermaid source in crucible-c4-diagrams.md, associated with ADR-0010 per ADR-0002. Four levels: context, container, component, code.</p>
+  </div>
+</header>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head"><span class="n">L1</span><h2>System Context</h2></div>
+    <p>Crucible orchestrates training inside the already-deployed internal applications: it configures team spaces through each app's admin API, transforms identity via the enterprise STS, grades against application state, and publishes results to the LMS.</p>
+    <div class="frame"><pre class="mermaid">
+C4Context
+  title Crucible · System Context
+
+  Person(student, "Student", "Employee taking hands-on training in the deployed applications")
+  Person(instructor, "Instructor", "Training branch staff running cohorts, injects, resets, and grading")
+  Person(appteam, "App Team Engineer", "Owns a training application; publishes its integration contract")
+
+  System(crucible, "Crucible", "Training orchestration and assessment platform: configures training spaces, seeds simulations, resets, and grades")
+
+  System_Ext(apps, "Deployed Training Applications", "Existing internal web apps; expose admin APIs for team spaces and an audit or event feed")
+  System_Ext(idp, "Enterprise IdP", "Normal workforce authentication; source of real identity and rosters via groups")
+  System_Ext(sts, "Enterprise STS", "Token exchange per ADR-0008; applies the training context transform")
+  System_Ext(lms, "LMS", "Training branch system of record for enrollment, grades, and completion")
+
+  Rel(student, crucible, "Takes courses via session cockpit", "HTTPS")
+  Rel(instructor, crucible, "Runs cohorts, resets, reviews grading", "HTTPS")
+  Rel(appteam, crucible, "Publishes versioned integration contracts", "Git / OCI")
+  Rel(student, apps, "Performs exercises in team space", "training-context token")
+  Rel(crucible, apps, "Creates, seeds, resets, deletes team spaces; reads audit feed", "Admin API")
+  Rel(student, idp, "Authenticates normally", "OIDC")
+  Rel(crucible, sts, "Requests training-context token exchange", "OAuth 2.0 Token Exchange")
+  Rel(sts, idp, "Validates real identity", "OIDC")
+  Rel(crucible, lms, "Publishes grades and completion", "xAPI / LTI")
+    </pre></div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head"><span class="n">L2</span><h2>Container</h2></div>
+    <p>Adopted open source carries the portal, scoring, and plumbing; the custom containers are the Orchestrator, the Assertion Engine checkers, and the two registries' contracts.</p>
+    <div class="frame"><pre class="mermaid">
+C4Container
+  title Crucible · Container Diagram
+
+  Person(student, "Student")
+  Person(instructor, "Instructor")
+
+  System_Boundary(crucible, "Crucible") {
+    Container(portal, "Training Portal + Session Cockpit", "Educates", "Cohort access, session lifecycle, instructions, terminals, embedded app view")
+    Container(console, "Instructor Console", "Web app", "Cohort setup, live progress, injects, one-click reset, rebuild, teardown")
+    Container(orchestrator, "Orchestrator", "Service", "Configures training spaces through app admin APIs; owns reset, scheduling, conformance")
+    ContainerDb(contracts, "Integration Contract Registry", "OCI registry", "Versioned per-app contracts: space operations, seed hook, event feed pointer")
+    ContainerDb(scenarios, "Scenario Pack Registry", "OCI registry", "Versioned simulations: synthetic datasets, app state, accounts, injects")
+    Container(assert, "Assertion Engine", "Service + CTFd or PrairieLearn", "State and event assertions scoped by team; rubrics, evidence, overrides")
+    Container(bus, "Activity Bus", "NATS JetStream", "Durable stream of student and system events")
+    ContainerDb(search, "Activity Search", "OpenSearch", "Indexed audit and telemetry for replay and event assertions")
+    Container(lmsbridge, "LMS Bridge", "Service", "Publishes results over xAPI / LTI")
+  }
+
+  System_Ext(apps, "Deployed Training Applications", "Admin API + audit feed")
+  System_Ext(idp, "Enterprise IdP", "OIDC")
+  System_Ext(sts, "Enterprise STS", "Token exchange, ADR-0008")
+  System_Ext(lms, "LMS", "System of record")
+
+  Rel(student, portal, "Takes sessions", "HTTPS")
+  Rel(instructor, console, "Operates cohorts", "HTTPS")
+  Rel(portal, idp, "Authenticates users", "OIDC")
+  Rel(portal, sts, "Exchanges for training-context token", "RFC 8693")
+  Rel(portal, apps, "Embeds team-scoped app view", "HTTPS")
+  Rel(console, orchestrator, "Requests spaces, resets, teardowns", "REST")
+  Rel(orchestrator, contracts, "Resolves contract version", "OCI pull")
+  Rel(orchestrator, scenarios, "Pulls scenario pack", "OCI pull")
+  Rel(orchestrator, apps, "Creates, seeds, resets, deletes team spaces", "Admin API")
+  Rel(orchestrator, bus, "Publishes lifecycle events", "NATS")
+  Rel(apps, bus, "Streams audit events", "Connector")
+  Rel(bus, search, "Indexes activity", "Consumer")
+  Rel(assert, apps, "Runs state assertions, scoped by team", "API / DB read")
+  Rel(assert, search, "Runs event assertions", "Query")
+  Rel(assert, lmsbridge, "Emits scored rubrics", "REST")
+  Rel(lmsbridge, lms, "Publishes grades and completion", "xAPI / LTI")
+    </pre></div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head"><span class="n">L3</span><h2>Component · Orchestrator</h2></div>
+    <p>Every mutation of a training space flows through the Space Provisioner against the app's own admin API; nothing writes to app databases directly.</p>
+    <div class="frame"><pre class="mermaid">
+C4Component
+  title Crucible Orchestrator · Component Diagram
+
+  Container_Boundary(orch, "Orchestrator") {
+    Component(api, "Request API", "REST controller", "Accepts space, reset, and teardown requests")
+    Component(resolver, "Contract Resolver", "Component", "Fetches and validates the pinned integration contract version")
+    Component(provisioner, "Space Provisioner", "Admin API client", "Executes create, delete, and access operations per contract")
+    Component(seeder, "Seed Runner", "Component", "Applies the scenario pack through the seed hook; idempotent")
+    Component(baseline, "Baseline Manifest Store", "Component + DB", "Records object IDs created at setup; reference for every reset")
+    Component(reset, "Reset Controller", "Component", "Scenario reset, space rebuild, cohort teardown as strategies")
+    Component(scheduler, "Cohort Scheduler", "Component", "Calendar-driven provisioning and end-date auto-teardown")
+    Component(conformance, "Conformance Checker", "Component", "Verifies a contract version against a live app")
+    Component(events, "Event Publisher", "Component", "Emits lifecycle events to the activity bus")
+  }
+
+  Container_Ext(console, "Instructor Console")
+  ContainerDb_Ext(contracts, "Integration Contract Registry")
+  ContainerDb_Ext(scenarios, "Scenario Pack Registry")
+  System_Ext(apps, "Deployed Training Applications")
+  Container_Ext(bus, "Activity Bus")
+
+  Rel(console, api, "Space, reset, teardown requests", "REST")
+  Rel(scheduler, api, "Scheduled requests", "Internal")
+  Rel(api, resolver, "Resolve contract")
+  Rel(resolver, contracts, "Pull pinned version", "OCI")
+  Rel(api, provisioner, "Create or delete team spaces")
+  Rel(provisioner, apps, "Admin API calls")
+  Rel(api, seeder, "Seed simulation")
+  Rel(seeder, scenarios, "Pull scenario pack", "OCI")
+  Rel(seeder, apps, "Invoke seed hook")
+  Rel(seeder, baseline, "Record created object IDs")
+  Rel(api, reset, "Execute reset")
+  Rel(reset, baseline, "Read baseline manifest")
+  Rel(reset, provisioner, "Rebuild via delete + create")
+  Rel(reset, seeder, "Re-seed simulation")
+  Rel(conformance, apps, "Contract verification calls")
+  Rel(api, events, "Lifecycle changes")
+  Rel(events, bus, "Publish", "NATS")
+    </pre></div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head"><span class="n">L4</span><h2>Code · Training Space Lifecycle Domain Model</h2></div>
+    <p>TrainingSpace is the aggregate root per ADR-0003. Every reset is a strategy replayed from the contract, the scenario pack version, and the baseline manifest.</p>
+    <div class="frame"><pre class="mermaid">
+classDiagram
+  class TrainingSpace {
+    +SpaceId id
+    +SpaceMode mode
+    +SpaceState state
+    +CohortId cohort
+    +configure()
+    +reset(strategy)
+    +teardown()
+  }
+  class SpaceMode {
+    &lt;&lt;enumeration&gt;&gt;
+    COHORT
+    INDIVIDUAL
+    EXAM
+  }
+  class SpaceState {
+    &lt;&lt;enumeration&gt;&gt;
+    REQUESTED
+    CONFIGURED
+    SEEDED
+    ACTIVE
+    RESETTING
+    TORN_DOWN
+  }
+  class IntegrationContract {
+    +AppId app
+    +SemVer version
+    +SpaceOperations operations
+    +SeedHook seedHook
+    +EventFeedRef eventFeed
+    +verifyConformance()
+  }
+  class SpaceOperations {
+    +createSpace(roster)
+    +deleteSpace(spaceId)
+    +grantAccess(spaceId, principal)
+    +revokeAccess(spaceId, principal)
+  }
+  class SeedHook {
+    +apply(spaceId, pack) BaselineManifest
+    +idempotent bool
+  }
+  class ScenarioPack {
+    +PackId id
+    +SemVer version
+    +Dataset[] datasets
+    +Inject[] injects
+    +RoleTemplate[] roles
+  }
+  class BaselineManifest {
+    +SpaceId space
+    +ObjectRef[] createdObjects
+    +PackId packVersion
+    +Timestamp capturedAt
+  }
+  class ResetStrategy {
+    &lt;&lt;abstract&gt;&gt;
+    +execute(space)
+  }
+  class ScenarioReset {
+    +execute(space)
+  }
+  class SpaceRebuild {
+    +execute(space)
+  }
+  class CohortTeardown {
+    +execute(space)
+  }
+  class Cohort {
+    +CohortId id
+    +Roster roster
+    +Date startDate
+    +Date endDate
+    +TrainingSpace[] spaces
+  }
+  class Roster {
+    +Principal[] students
+    +Principal[] instructors
+  }
+  class TrainingContextToken {
+    +Subject subject
+    +ActClaim realIdentity
+    +CohortId cohort
+    +SpaceId space
+    +PackId scenarioVersion
+    +Audience audience
+    +TTL expiry
+  }
+
+  Cohort "1" o-- "many" TrainingSpace
+  Cohort "1" *-- "1" Roster
+  TrainingSpace "many" --> "1" IntegrationContract : configured via
+  TrainingSpace "1" --> "1" ScenarioPack : seeded from
+  TrainingSpace "1" *-- "1" BaselineManifest : records
+  TrainingSpace "1" --> "1" SpaceMode
+  TrainingSpace "1" --> "1" SpaceState
+  IntegrationContract "1" *-- "1" SpaceOperations
+  IntegrationContract "1" *-- "1" SeedHook
+  SeedHook ..> BaselineManifest : produces
+  ResetStrategy &lt;|-- ScenarioReset
+  ResetStrategy &lt;|-- SpaceRebuild
+  ResetStrategy &lt;|-- CohortTeardown
+  ScenarioReset ..> SeedHook : re-applies
+  SpaceRebuild ..> SpaceOperations : delete and create
+  SpaceRebuild ..> SeedHook : re-applies
+  CohortTeardown ..> SpaceOperations : delete all
+  TrainingContextToken ..> TrainingSpace : scoped to
+  TrainingContextToken ..> Cohort : scoped to
+    </pre></div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap"><p>Crucible · C4 levels 1 through 4 · Mermaid source is canonical · ADR-0010 · per ADR-0002</p></div>
+</footer>
+
+<script type="module">
+  let m = null;
+  try {
+    m = (await import('https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.4.1/mermaid.esm.min.mjs')).default;
+  } catch (e) {
+    try {
+      await new Promise((res, rej) => {
+        const s = document.createElement('script');
+        s.src = 'https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js';
+        s.onload = res; s.onerror = rej;
+        document.head.appendChild(s);
+      });
+      m = window.mermaid;
+    } catch (e2) { m = null; }
+  }
+  if (m) {
+    m.initialize({
+      startOnLoad: false,
+      theme: 'dark',
+      themeVariables: {
+        fontFamily: 'IBM Plex Sans, sans-serif',
+        primaryColor: '#1A2530',
+        primaryBorderColor: '#6D8DFF',
+        primaryTextColor: '#E7EEF4',
+        lineColor: '#5C6E7B'
+      },
+      c4: { wrap: true }
+    });
+    await m.run({ querySelector: '.mermaid' });
+  } else {
+    document.querySelectorAll('.mermaid').forEach(el => {
+      el.style.cssText = 'color:#93A2AF;font-family:IBM Plex Mono,monospace;font-size:13px;white-space:pre;';
+      el.insertAdjacentHTML('beforebegin',
+        '<p style="color:#E0A93C;font-family:IBM Plex Mono,monospace;font-size:13px;">Mermaid failed to load from the CDN (offline?). Showing source instead; render crucible-c4-diagrams.md in your repo.</p>');
+    });
+  }
+</script>
+</body>
+</html>
